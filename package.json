@@ -1,7 +1,7 @@
 {
   "name": "detective-game",
   "version": "1.0.0",
-  "description": "Son Hasat — yapay zekâ kullanmayan Türkçe sorgu/dedektif oyunu",
+  "description": "Sorgu Odası: Türkçe dedektiflik oyunu",
   "private": true,
   "scripts": {
     "test": "node tests/story.test.js",

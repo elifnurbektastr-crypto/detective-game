@@ -3,9 +3,28 @@
 
   var CASES = window.CASES || [];
   var LEVELS = SorguMotoru.DIFFICULTY;
-  var TYPE_NAMES = { kanit: "Kanıt", ifade: "İfade", iddia: "İddia", celiski: "Çelişki", cikarim: "Çıkarım" };
+  var TYPE_NAMES = { kanit: "Kanıt", ifade: "İfade", iddia: "Söylenti", celiski: "Çelişki", cikarim: "Çıkarım" };
   var TAB_OF = { kanit: "kanit", ifade: "ifade", iddia: "ifade", celiski: "bag", cikarim: "bag" };
-  var STATUS = { bekliyor: "Teyit bekliyor", teyit: "✓ Teyit edildi", curutuldu: "✗ Çürütüldü" };
+  var STATUS = { bekliyor: "Doğrulanmadı", teyit: "Doğrulandı", curutuldu: "Yalan çıktı" };
+  var ICONS = {
+    back: '<path d="M15 5l-7 7 7 7"/>',
+    menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+    reset: '<path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/>',
+    people: '<circle cx="9" cy="8" r="3.2"/><path d="M3 19c.6-3.3 3-5 6-5s5.4 1.7 6 5"/><circle cx="17" cy="9" r="2.4"/><path d="M16 14c2.4.2 4.2 1.8 4.8 4.6"/>',
+    book: '<path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h10"/>',
+    folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+    report: '<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 16h5"/>',
+    map: '<path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/>',
+    lens: '<circle cx="10" cy="10" r="6"/><path d="M15 15l5 5"/>',
+    note: '<path d="M6 3h12v18H6z"/><path d="M9 8h6M9 12h6M9 16h4"/>'
+  };
+  function icon(name) {
+    var s = document.createElement("span");
+    s.className = "ico";
+    s.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICONS[name] + "</svg>";
+    return s;
+  }
+  function mobile() { return window.matchMedia("(max-width: 860px)").matches; }
 
   var CASE = null, game = null, current = null, tab = "belge", busy = false, headPortrait = null;
 
@@ -30,6 +49,7 @@
   function showHome() {
     CASE = null; game = null; current = null;
     document.body.classList.add("at-home");
+    delete document.body.dataset.view;
     $("home").hidden = false; $("game").hidden = true;
     try { localStorage.removeItem("dedektif:son"); } catch (e) { /* yok say */ }
     var grid = $("homeGrid"); grid.textContent = "";
@@ -66,7 +86,7 @@
     Object.keys(c.characters).forEach(function (cid) { faces.appendChild(face(cid, 34)); });
     CASE = prev;
     card.appendChild(faces);
-    card.appendChild(el("div", "case-meta", c.duration + " · " + c.players + (saved && saved.solved ? " · ✓ Çözüldü" : "")));
+    card.appendChild(el("div", "case-meta", c.duration + " · " + c.players + (saved && saved.solved ? " · Çözüldü" : "")));
     var act = el("div", "case-actions");
     act.appendChild(btn("btn primary", saved && saved.started && !saved.solved ? "Devam et" : "Oyna", function () { openCase(c); }));
     var pdf = el("a", "btn ghost", "PDF seti"); pdf.href = pdfUrl(c); pdf.target = "_blank"; pdf.rel = "noopener";
@@ -88,6 +108,7 @@
     var chip = $("caseLevel"); chip.textContent = game.rules.label; chip.className = "lv-chip lv-" + CASE.difficulty;
     $("casePlace").textContent = CASE.subtitle + " · " + CASE.place;
     renderSuspects(); renderChat(); renderNotebook(); renderStats();
+    setView(mobile() ? "supheli" : "sorgu");
     if (!game.s.started) openIntro();
   }
 
@@ -152,11 +173,16 @@
     }
     head.hidden = false;
     var ch = CASE.characters[current];
+    var back = btn("back-btn", null, function () { setView("supheli"); });
+    back.setAttribute("aria-label", "Şüphelilere dön");
+    back.appendChild(icon("back"));
+    head.appendChild(back);
     headPortrait = face(current, 72, "head-portrait");
     head.appendChild(headPortrait);
-    var t = el("div");
+    var t = el("div", "head-text");
     t.appendChild(el("h3", null, ch.name + ", " + ch.age));
     t.appendChild(el("p", "head-role", ch.role));
+    t.appendChild(el("p", "head-status", "yazıyor..."));
     t.appendChild(el("p", "head-bio", ch.bio));
     head.appendChild(t);
     log(current).forEach(function (m) { box.appendChild(bubble(m)); });
@@ -174,7 +200,7 @@
     if (m.who === "them") d.style.setProperty("--c", ch.color);
     d.appendChild(who);
     d.appendChild(document.createTextNode(m.text));
-    if (m.hint) d.appendChild(el("span", "lock-hint", "🔑 " + m.hint));
+    if (m.hint) d.appendChild(el("span", "lock-hint", m.hint));
     row.appendChild(d);
     return row;
   }
@@ -204,29 +230,35 @@
     var box = $("chatLog");
     var typing = el("div", "typing"); typing.innerHTML = "<i></i><i></i><i></i>";
     box.appendChild(typing); box.scrollTop = box.scrollHeight;
+    $("chatHead").classList.add("is-typing");
     var res = action();
     save();
+    // Biraz düşünüp yazıyormuş gibi: uzun cevaplar biraz daha uzun sürer.
+    var wait = 500 + Math.random() * 500 + Math.min(1400, res.text.length * 9);
     setTimeout(function () {
       typing.remove();
+      $("chatHead").classList.remove("is-typing");
       busy = false;
       if (cid !== current) return;
       push({ who: "them", text: res.text, kind: res.kind === "kilitli" ? "kilitli" : "", hint: res.hint || null });
       Portre.talk(headPortrait, res.text);
+      var buzz = false;
       res.gained.forEach(function (fid) {
         var f = game.facts[fid];
         var isLink = f.type === "celiski" || f.type === "cikarim";
-        var label = isLink ? "⚡ " + TYPE_NAMES[f.type] + ": " : f.type === "iddia" ? "💬 İddia (teyit edin): " : "📓 Deftere eklendi: ";
+        var label = isLink ? TYPE_NAMES[f.type] + ": " : f.type === "iddia" ? "Söylenti not edildi: " : "Not alındı: ";
         push({ who: "note", cls: isLink ? "link" : "gain", text: label + f.title });
-        if (isLink) toast(TYPE_NAMES[f.type], f.title);
+        if (isLink) { toast(TYPE_NAMES[f.type], f.title); buzz = true; }
       });
       game.documents().slice(docsBefore).forEach(function (d) {
-        push({ who: "note", cls: "gain", text: "📄 Yeni belge: " + d.title });
+        push({ who: "note", cls: "gain", text: "Yeni belge: " + d.title });
         toast("Yeni belge", d.title);
       });
+      if (buzz && navigator.vibrate) navigator.vibrate([30, 40, 30]);
       save();
       renderChips(); renderSuspects(); renderStats(); renderNotebook();
       if (res.gained.length) markMobileDot(true);
-    }, 350 + Math.min(900, res.text.length * 6));
+    }, wait);
   }
 
   function send(text) {
@@ -272,7 +304,7 @@
       docs.forEach(function (d) {
         var c = el("button", "doc-card" + (seenDocs.indexOf(d.id) < 0 ? " unseen" : ""));
         c.type = "button";
-        c.appendChild(el("span", "doc-ico", d.kind === "otopsi" ? "🩺" : d.kind === "not" ? "📒" : d.id === "kroki" ? "🗺️" : "🔎"));
+        c.appendChild(icon(d.kind === "otopsi" ? "report" : d.kind === "not" ? "note" : d.id === "kroki" ? "map" : "lens"));
         var t = el("span"); t.appendChild(el("b", null, d.title)); t.appendChild(el("small", null, d.sub || ""));
         c.appendChild(t);
         c.onclick = function () { openDoc(d); };
@@ -303,8 +335,10 @@
     build(body);
     $("modal").hidden = false;
     $("modal")._onClose = onClose;
-    $("modal").querySelector(".modal-card").scrollTop = 0;
-    $("modalClose").focus();
+    var card = $("modal").querySelector(".modal-card");
+    card.scrollTop = 0;
+    card.setAttribute("tabindex", "-1");
+    card.focus({ preventScroll: true });
   }
   function closeModal() {
     $("modal").hidden = true;
@@ -336,7 +370,7 @@
       b.appendChild(el("h3", null, "Nasıl oynanır · " + game.rules.label + " seviye"));
       var ol = el("ol");
       CASE.howto.forEach(function (h) { ol.appendChild(el("li", null, h)); });
-      ol.appendChild(el("li", null, "Şüpheliler bazen bir başkası hakkında konuşur. Bunlar deftere “iddia” olarak düşer; ilgili kişiye sorup teyit edin."));
+      ol.appendChild(el("li", null, "Şüpheliler bazen başkaları hakkında konuşur. Bunlar deftere söylenti olarak düşer. Doğru olup olmadığını o kişiye sorarak anlayabilirsiniz."));
       ol.appendChild(el("li", null, "Belgeler sekmesinde otopsi raporu, olay yeri krokisi ve deliller var."));
       if (game.rules.maxAccuse) ol.appendChild(el("li", null, "Bu seviyede yalnızca " + game.rules.maxAccuse + " suçlama hakkınız var."));
       b.appendChild(ol);
@@ -454,6 +488,7 @@
   }
   function setView(v) {
     $("layout").dataset.view = v;
+    document.body.dataset.view = v;
     document.querySelectorAll("#mobileNav button").forEach(function (b) { b.classList.toggle("active", b.dataset.view === v); });
     if (v === "defter") markMobileDot(false);
   }
@@ -473,10 +508,28 @@
     b.onclick = function () { if (tab !== "belge") clearFresh(tab); tab = b.dataset.tab; renderNotebook(); };
   });
   document.querySelectorAll("#mobileNav button").forEach(function (b) {
-    b.onclick = function () { setView(b.dataset.view); };
+    var name = { supheli: "people", defter: "book", vaka: "folder" }[b.dataset.view];
+    if (name) b.insertBefore(icon(name), b.firstChild);
+    b.onclick = function () { if (b.dataset.view === "vaka") openIntro(); else setView(b.dataset.view); };
   });
+  $("btnHome").textContent = ""; $("btnHome").appendChild(icon("menu"));
+  $("btnReset").textContent = ""; $("btnReset").appendChild(icon("reset"));
 
-  // Açılış: ?vaka=… ya da en son oynanan vaka, yoksa ana ekran
+  /* ---------- uygulama olarak yükleme ve çevrimdışı ---------- */
+  if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+    navigator.serviceWorker.register("sw.js").catch(function () { /* yok say */ });
+  }
+  var installEvent = null;
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault(); installEvent = e; $("installBox").hidden = false;
+  });
+  $("btnInstall").onclick = function () {
+    if (installEvent) { installEvent.prompt(); installEvent = null; $("installBox").hidden = true; }
+  };
+  var standalone = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+  if (!standalone && /iphone|ipad|ipod/i.test(navigator.userAgent)) $("iosHint").hidden = false;
+
+  // Açılış: ?vaka= ya da en son oynanan vaka, yoksa ana ekran
   var want = new URLSearchParams(location.search).get("vaka");
   try { want = want || localStorage.getItem("dedektif:son"); } catch (e) { /* yok say */ }
   var found = CASES.filter(function (c) { return c.id === want; })[0];

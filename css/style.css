@@ -101,7 +101,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .msg .who { display: block; font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--c, var(--muted)); margin-bottom: 2px; }
 .msg.me .who { color: #7a6a55; }
 .msg.them.kilitli { border-style: dashed; }
-.msg.them.kilitli::after { content: "🔒 Bu konu kilitli. Elinizde bir kanıt olduğunda tekrar sorun."; display: block; margin-top: 6px; font-size: 12px; color: var(--muted); }
+.msg.them.kilitli::after { content: "Bu konuda bir şey söylemiyor. Elinize bir kanıt geçince tekrar sorun."; display: block; margin-top: 6px; font-size: 12px; color: var(--muted); }
 .note {
   align-self: center; font-size: 12.5px; color: var(--muted); text-align: center; max-width: 90%;
   border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; animation: rise .25s ease-out;
@@ -334,3 +334,90 @@ a.btn { text-decoration: none; display: inline-flex; align-items: center; color:
   .doc-diagram { grid-template-columns: 1fr; }
   .row.them .msg { max-width: calc(100% - 38px); }
 }
+
+/* =================== v3: uygulama hissi =================== */
+html { -webkit-text-size-adjust: 100%; }
+body { overscroll-behavior: none; -webkit-tap-highlight-color: transparent; }
+button, .chip, .suspect, .tab, .doc-card, .mobile-nav { -webkit-user-select: none; user-select: none; touch-action: manipulation; }
+.btn:active, .suspect:active, .doc-card:active, .chip:active, .option:active { transform: scale(.97); }
+.ico { display: inline-flex; width: 20px; height: 20px; flex: none; }
+.ico svg { width: 100%; height: 100%; }
+.btn.icon { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; padding: 0; }
+.doc-card .ico { width: 26px; height: 26px; color: var(--gold); }
+.back-btn { display: none; background: none; border: 0; color: var(--ink); padding: 6px; margin-left: -6px; }
+.back-btn .ico { width: 24px; height: 24px; }
+.head-status { display: none; color: var(--green) !important; font-size: 12px; }
+.chat-head.is-typing .head-status { display: block; }
+.chat-head.is-typing .head-role { display: none; }
+.install { margin-top: 16px; }
+.install-hint { margin-top: 12px; font-size: 13px; }
+
+@media (max-width: 860px) {
+  html, body { height: 100%; }
+  body { height: 100dvh; }
+  .game { height: 100dvh; }
+  .desk-only { display: none !important; }
+
+  /* Üst bar */
+  .top { padding: calc(8px + env(safe-area-inset-top)) 12px 8px; gap: 8px; }
+  .brand { gap: 8px; }
+  .brand-title { font-size: 19px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .top-actions .btn.accent { padding: 7px 14px; }
+
+  /* Paneller tam ekran */
+  .layout { padding: 0; gap: 0; }
+  .layout > .panel { border: 0; border-radius: 0; background: transparent; }
+  .suspects { padding: 14px 14px 10px; }
+  .suspect { padding: 12px 10px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); }
+  .suspect.active { border-color: var(--gold); }
+  .suspect-list { gap: 10px; }
+  .suspect .portrait { width: 54px !important; height: 54px !important; }
+  .suspect-name { font-size: 15.5px; }
+  .stats { margin-top: 18px; }
+
+  /* Sohbet ekranı: üst bar ve alt menü gizlenir, geri tuşu görünür */
+  body[data-view="sorgu"] .top, body[data-view="sorgu"] .mobile-nav { display: none; }
+  body[data-view="sorgu"] .chat-head { padding-top: calc(10px + env(safe-area-inset-top)); }
+  .back-btn { display: inline-flex; }
+  .chat-head { gap: 10px; padding: 10px 12px; background: var(--panel); border-bottom: 1px solid var(--line); }
+  .head-portrait { width: 44px !important; height: 44px !important; }
+  .chat-head h3 { font-size: 17px; }
+  .chat-log { padding: 14px 12px; }
+  .composer { padding: 8px 10px calc(8px + env(safe-area-inset-bottom)); background: var(--panel); gap: 6px; }
+  .composer-input { font-size: 16px; padding: 10px 14px; }
+  #btnShow { padding: 8px 11px; font-size: 13px; }
+  .chips { padding: 6px 12px 8px; }
+
+  /* Defter */
+  .nb-head { padding: 14px 14px 8px; }
+  .tabs { overflow-x: auto; scrollbar-width: none; padding: 0 8px; }
+  .nb-list { padding: 12px; }
+
+  /* Alt menü */
+  .mobile-nav { padding-bottom: env(safe-area-inset-bottom); background: rgba(27,24,21,.96); backdrop-filter: blur(10px); }
+  .mobile-nav button { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 4px 7px; font-size: 11.5px; }
+  .mobile-nav button.active { box-shadow: none; color: var(--gold); }
+  .mobile-nav .ico { width: 23px; height: 23px; }
+  .mobile-nav .dot { top: 6px; margin-left: 18px; }
+
+  /* Pencereler alttan açılır */
+  .modal { align-items: end; padding: 0; }
+  .modal-card { width: 100%; max-height: 92dvh; border-radius: 20px 20px 0 0; padding: 26px 16px calc(20px + env(safe-area-inset-bottom)); animation: sheet .25s ease-out; }
+  .modal-card::before { content: ""; position: absolute; top: 8px; left: 50%; width: 40px; height: 4px; margin-left: -20px; border-radius: 4px; background: #4a4139; }
+  .modal-card.wide { width: 100%; }
+  .modal h2 { font-size: 24px; }
+  .modal-actions { position: sticky; bottom: -20px; background: var(--panel); padding: 12px 0 4px; margin-top: 16px; }
+  .modal-card.wide .modal-actions { background: #2a2520; }
+  .modal-actions .btn { flex: 1; justify-content: center; }
+  .toasts { top: calc(10px + env(safe-area-inset-top)); bottom: auto; }
+
+  .home { padding: calc(28px + env(safe-area-inset-top)) 14px calc(30px + env(safe-area-inset-bottom)); }
+}
+@keyframes sheet { from { transform: translateY(40px); opacity: .4; } to { transform: none; opacity: 1; } }
+
+/* Ana ekrana eklenmiş uygulama */
+@media (display-mode: standalone) {
+  .install, .install-hint { display: none !important; }
+}
+
+.modal-card:focus { outline: none; }

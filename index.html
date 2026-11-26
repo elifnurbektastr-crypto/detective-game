@@ -2,8 +2,17 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sorgu Odası · Dedektif Oyunu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Sorgu Odası</title>
+  <meta name="description" content="Şüphelileri sorgulayın, yalanları yakalayın, katili bulun.">
+  <meta name="theme-color" content="#13110f">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Sorgu Odası">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
@@ -12,9 +21,13 @@
   <!-- ANA EKRAN: vaka seçimi -->
   <div class="home" id="home" hidden>
     <header class="home-head">
-      <div class="home-kicker">Yapay zekâsız dedektiflik oyunu</div>
+      <div class="home-kicker">Dedektiflik oyunu</div>
       <h1>Sorgu Odası</h1>
-      <p>Şüphelileri kendi sorularınızla sorgulayın, yalanlarını yakalayın, belgeleri inceleyin ve katili bulun. Her vakayı yazdırıp kâğıt üzerinde de oynayabilirsiniz.</p>
+      <p>Şüphelileri kendi sorularınla sorgula, yalanlarını yakala, belgeleri incele ve katili bul. İstersen vakayı yazdırıp kâğıt üzerinde de çözebilirsin.</p>
+      <div class="install" id="installBox" hidden>
+        <button class="btn primary" id="btnInstall" type="button">Uygulamayı yükle</button>
+      </div>
+      <p class="install-hint" id="iosHint" hidden>Uygulama gibi kullanmak için: Paylaş düğmesine, sonra "Ana Ekrana Ekle"ye dokunun.</p>
     </header>
     <div class="home-grid" id="homeGrid"></div>
   </div>
@@ -23,15 +36,15 @@
   <div class="game" id="game" hidden>
     <header class="top">
       <div class="brand">
-        <button class="btn ghost icon" id="btnHome" type="button" title="Vakalar">☰</button>
+        <button class="btn ghost icon" id="btnHome" type="button" title="Vakalar" aria-label="Vakalar"></button>
         <span class="brand-title" id="caseTitle"></span>
         <span class="lv-chip" id="caseLevel"></span>
         <span class="brand-sub" id="casePlace"></span>
       </div>
       <nav class="top-actions">
-        <button class="btn ghost" id="btnCase" type="button">Vaka dosyası</button>
+        <button class="btn ghost desk-only" id="btnCase" type="button">Vaka dosyası</button>
         <button class="btn accent" id="btnAccuse" type="button">Suçla</button>
-        <button class="btn ghost icon" id="btnReset" type="button" title="Baştan başla">↺</button>
+        <button class="btn ghost icon" id="btnReset" type="button" title="Baştan başla" aria-label="Baştan başla"></button>
       </nav>
     </header>
 
@@ -48,7 +61,7 @@
         <div class="chips" id="chips"></div>
         <form class="composer" id="composer" autocomplete="off">
           <button class="btn ghost" id="btnShow" type="button" title="Defterdeki bir bilgiyi göster">Kanıt göster</button>
-          <input class="composer-input" id="input" type="text" maxlength="200" placeholder="Sorunuzu yazın…">
+          <input class="composer-input" id="input" type="text" maxlength="200" placeholder="Bir soru yazın" enterkeyhint="send" autocapitalize="sentences">
           <button class="btn primary" id="btnSend" type="submit">Sor</button>
         </form>
       </section>
@@ -69,9 +82,9 @@
     </main>
 
     <nav class="mobile-nav" id="mobileNav">
-      <button data-view="supheli" type="button">Şüpheliler</button>
-      <button data-view="sorgu" type="button" class="active">Sorgu</button>
-      <button data-view="defter" type="button">Defter <span class="dot" id="mobileDot"></span></button>
+      <button data-view="supheli" type="button" class="active"><span class="lbl">Şüpheliler</span></button>
+      <button data-view="defter" type="button"><span class="lbl">Defter</span><span class="dot" id="mobileDot"></span></button>
+      <button data-view="vaka" type="button"><span class="lbl">Vaka</span></button>
     </nav>
   </div>
 

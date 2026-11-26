@@ -1,8 +1,8 @@
 /*
- * Sorgu motoru — yapay zeka kullanmaz.
+ * Sorgu motoru.
  *
  * Akış:
- *  1. Oyuncunun sorusu normalleştirilir (Türkçe küçük harf, ç→c, ı→i …, noktalama atılır).
+ *  1. Oyuncunun sorusu normalleştirilir (Türkçe küçük harf, ç→c, ı→i, noktalama atılır).
  *  2. Şüphelinin her konusu (topic) anahtar kelime gruplarıyla puanlanır.
  *     Bir konunun tüm grupları eşleşmelidir; en çok grubu eşleşen konu kazanır.
  *  3. Konunun "varyantları" vardır. Gereken bilgiler (req / any) defterde olan
@@ -95,7 +95,8 @@
     var keyDef = this.d.keys[t.id] || {};
     var groups = t.k || fallbackKeys || keyDef.k;
     if (!groups) throw new Error("Konu için anahtar yok: " + t.id);
-    var variants = t.v || [{ a: t.a, gives: t.gives, req: t.req, any: t.any }];
+    var variants = t.v || [{ a: t.a, gives: t.gives, req: t.req, any: t.any, f: t.f }];
+    if (t.v && t.f) variants.forEach(function (v) { if (!v.f) v.f = t.f; });
     return {
       id: t.id, ask: t.ask, locked: t.locked,
       p: t.p != null ? t.p : (keyDef.p || 0),
@@ -181,10 +182,33 @@
     var v = t.variants[idx];
     var seen = this.s.seen[cid] || (this.s.seen[cid] = {});
     var key = t.id + "#" + idx;
-    var repeat = !!seen[key];
-    seen[key] = (seen[key] || 0) + 1;
-    var text = repeat && ch.repeat ? this._rot(cid + ":tekrar", ch.repeat) + " " + v.a : v.a;
-    return { kind: repeat ? "tekrar" : "cevap", topic: t.id, text: text, gained: this.add(v.gives) };
+    var times = seen[key] || 0;
+    seen[key] = times + 1;
+    this.s.last = this.s.last || {};
+    this.s.last[cid] = { topic: t.id, idx: idx, isShow: t.id.indexOf("goster_") === 0 };
+    if (times === 0) return { kind: "cevap", topic: t.id, text: v.a, gained: this.add(v.gives) };
+    // Aynı soru tekrar: önce kısa bir tepki, sonra konuyu değiştirir. Cevap kelimesi kelimesine tekrarlanmaz.
+    if (times === 1 || !ch.deflect || !ch.deflect.length) {
+      return { kind: "tekrar", topic: t.id, text: this._rot(cid + ":tekrar", ch.repeat || ["Bunu konuştuk."]), gained: [] };
+    }
+    var d = this._deflect(cid);
+    d.kind = "tekrar";
+    return d;
+  };
+
+  // "Kim peki?", "neden?", "sonra?" gibi kısa devam soruları: son konunun devamı.
+  Game.prototype._followUp = function (cid) {
+    var last = this.s.last && this.s.last[cid];
+    if (!last) return null;
+    var t = last.isShow ? this.shows[cid][last.topic.slice(7)] : this.topics[cid].filter(function (x) { return x.id === last.topic; })[0];
+    var v = t && t.variants[last.idx];
+    if (!v || !v.f) return null;
+    var f = typeof v.f === "string" ? { a: v.f } : v.f;
+    var seen = this.s.seen[cid] || (this.s.seen[cid] = {});
+    var key = t.id + "#" + last.idx + "+devam";
+    if (seen[key]) return null;
+    seen[key] = 1;
+    return { kind: "cevap", topic: t.id, text: f.a, gained: this.add(f.gives) };
   };
 
   // Kolay seviye: kilidi açmak için en yakın varyantın eksik bilgilerini söyler.
@@ -196,7 +220,7 @@
       if (!best || miss.length < best.length) best = miss;
     });
     if (!best || !best.length) return null;
-    return "Bu konuyu açmak için şunu bulmalısınız: " + best.map(function (f) { return "“" + self.facts[f].title + "”"; }).join(", ");
+    return "Bu konuyu açmak için şunu bulmalısınız: " + best.map(function (f) { return "'" + self.facts[f].title + "'"; }).join(", ");
   };
 
   // Bir bilginin durumu: iddialar teyit bekler; çelişkiyle çürütülen ifadeler işaretlenir.
@@ -209,7 +233,7 @@
     return null;
   };
 
-  // Açılmış belgeler (otopsi, kroki, deliller…)
+  // Açılmış belgeler (otopsi, kroki, deliller)
   Game.prototype.documents = function () {
     var self = this;
     return (this.d.documents || []).filter(function (d) { return !d.unlock || self.has(d.unlock); });
@@ -248,10 +272,29 @@
     return { kind: "yonlendirme", topic: null, text: pick.d.a, gained: this.add(pick.d.gives) };
   };
 
+  // Tek başına geldiğinde anlamı olmayan, sohbeti sürdüren kelimeler.
+  var FILLER = toSet("tamam peki anladim anlasildi hmm hm ok okey evet hayir iyi oyle mi ha haa aa vay ilginc");
+  var FOLLOW = toSet("kim kimdi kimi kimden peki neden niye nicin nasil yani mesela ornegin sonra baska daha fazla anlat anlatin " +
+    "anlatir anlatsana misin misiniz mi mu ne neydi nedir demek istiyorsun istiyorsunuz ciddi gercekten emin o bu su onu bunu " +
+    "ve ya acik ac acar detay ayrinti hangi kimdir nereden niye ki iste olarak boyle bi bir sey " +
+    "oldu olmus oluyor etti ettin dedi dedin dediniz yaptin yapti yaptiniz gordun gordunuz");
+  function toSet(s) { var o = {}; s.split(" ").forEach(function (w) { o[w] = 1; }); return o; }
+  function only(tokens, set) { return tokens.length > 0 && tokens.every(function (w) { return set[w]; }); }
+
   Game.prototype.ask = function (cid, text) {
     this.s.questions++;
     var t = this.match(cid, text);
-    return t ? this._respond(cid, t) : this._deflect(cid);
+    if (t) return this._respond(cid, t);
+    var tokens = norm(text).split(" ").filter(Boolean);
+    var ch = this.d.characters[cid];
+    if (only(tokens, FILLER) && ch.ack) {
+      return { kind: "onay", topic: null, text: this._rot(cid + ":onay", ch.ack), gained: [] };
+    }
+    if (tokens.length <= 6 && only(tokens, FOLLOW)) {
+      var f = this._followUp(cid);
+      if (f) return f;
+    }
+    return this._deflect(cid);
   };
 
   Game.prototype.show = function (cid, fid) {

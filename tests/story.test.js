@@ -6,8 +6,8 @@ var CASE = require("../cases/son-hasat.js");
 
 var fails = 0, passes = 0;
 function test(name, fn) {
-  try { fn(); passes++; console.log("  ✓ " + name); }
-  catch (e) { fails++; console.log("  ✗ " + name + "\n      " + e.message); }
+  try { fn(); passes++; console.log("  ok   " + name); }
+  catch (e) { fails++; console.log("  HATA " + name + "\n      " + e.message); }
 }
 function fresh(over) { return new Engine.Game(over ? Object.assign({}, CASE, over) : CASE); }
 
@@ -67,7 +67,7 @@ Object.keys(CASE.characters).forEach(function (cid) {
   var g = fresh();
   g.topics[cid].forEach(function (t) {
     if (!t.ask) return;
-    test(cid + ": “" + t.ask + "” → " + t.id, function () {
+    test(cid + ": '" + t.ask + "' -> " + t.id, function () {
       var m = g.match(cid, t.ask);
       assert.ok(m, "eşleşme yok");
       assert.strictEqual(m.id, t.id);
@@ -88,14 +88,17 @@ console.log("\nSerbest yazılmış sorular");
   ["emre", "cesedi nasıl buldun", "ceset"],
   ["emre", "selim bey seni kovdu mu", "kovulma"],
   ["emre", "defneyle sevgili misiniz", "birlikte"],
-  ["kenan", "abini sen mi öldürdün", "katil"],
+  ["kenan", "abini sen mi öldürdün", "sucla"],
+  ["defne", "siz mi öldürdünüz", "sucla"],
+  ["defne", "babanızı kim öldürdü", "katil"],
+  ["murat", "katil sen misin", "sucla"],
   ["kenan", "kuyu meselesi ne", "arazi"],
   ["kenan", "yalan söylüyorsun", "yalan"],
   ["murat", "hesaplarda açık var mı, para nereye gitti", "hesap"],
   ["murat", "selim nasıl öldü", "nasil"],
   ["murat", "lavanta kolonyası mı kullanıyorsunuz", "koku"]
 ].forEach(function (f) {
-  test(f[0] + ": “" + f[1] + "” → " + f[2], function () {
+  test(f[0] + ": '" + f[1] + "' -> " + f[2], function () {
     var m = fresh().match(f[0], f[1]);
     assert.ok(m, "eşleşme yok");
     assert.strictEqual(m.id, f[2]);
@@ -149,6 +152,36 @@ test("belgeler kanıtla açılır", function () {
   assert.deepStrictEqual(ids(), ["otopsi", "kroki", "sise"]);
   g.add(["k_dugme"]);
   assert.ok(ids().indexOf("dugme") >= 0);
+});
+
+test("'kim peki' önceki konunun devamı olarak anlaşılır", function () {
+  var g = fresh();
+  g.ask("defne", "babanızı kim öldürdü");
+  var r = g.ask("defne", "kim peki");
+  assert.ok(/Amcam/.test(r.text), r.text);
+  assert.ok(g.has("ii_tehdit"));
+});
+test("'tamam' teşekkür sayılmaz", function () {
+  var r = fresh().ask("defne", "tamam");
+  assert.ok(!/Rica/.test(r.text), r.text);
+  assert.strictEqual(r.kind, "onay");
+});
+test("aynı soru tekrar sorulunca cevap kelimesi kelimesine tekrarlanmaz", function () {
+  var g = fresh();
+  var a = g.ask("defne", "o gece neredeydin").text;
+  var b = g.ask("defne", "o gece neredeydin").text;
+  assert.ok(b.indexOf(a) < 0, b);
+  var c = g.ask("defne", "o gece neredeydin");
+  assert.notStrictEqual(c.text, b);
+});
+test("kullanıcının gönderdiği konuşma artık mantıklı", function () {
+  var g = fresh();
+  var r1 = g.ask("defne", "siz mi öldürdünüz");
+  var r2 = g.ask("defne", "kim peki");
+  var r3 = g.ask("defne", "babanızı kim öldürdü");
+  assert.ok(/Hayır/.test(r1.text), r1.text);
+  assert.ok(!/Teşekkür|Rica/.test(r2.text), r2.text);
+  assert.ok(!/Babamı mı/.test(r3.text), r3.text);
 });
 
 console.log("\nZorluk");

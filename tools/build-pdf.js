@@ -33,5 +33,5 @@ ids.forEach(function (id) {
     "--user-data-dir=" + profile, "--virtual-time-budget=15000",
     "--print-to-pdf=" + out, page
   ], { stdio: "ignore" });
-  console.log("✓ " + path.relative(root, out) + " (" + Math.round(fs.statSync(out).size / 1024) + " KB)");
+  console.log("yazıldı: " + path.relative(root, out) + " (" + Math.round(fs.statSync(out).size / 1024) + " KB)");
 });

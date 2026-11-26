@@ -1,0 +1,17 @@
+{
+  "name": "Sorgu Odası",
+  "short_name": "Sorgu Odası",
+  "description": "Şüphelileri sorgulayın, yalanları yakalayın, katili bulun.",
+  "lang": "tr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#13110f",
+  "theme_color": "#13110f",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
