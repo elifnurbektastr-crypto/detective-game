@@ -232,6 +232,7 @@ test("her bilgiye ulaşılabiliyor (tüm sorular, kanıtlar ve kaçamak cevaplar
     Object.keys(CASE.characters).forEach(function (cid) {
       g.topics[cid].forEach(function (t) { g._respond(cid, t); });
       CASE.characters[cid].deflect.forEach(function () { g._deflect(cid); });
+      (CASE.puzzles || []).forEach(function (z) { if (!z.unlock || g.has(z.unlock)) g.solvePuzzle(z.id, z.code != null ? z.code : true); });
       g.s.known.slice().forEach(function (f) { g.show(cid, f); });
     });
   }

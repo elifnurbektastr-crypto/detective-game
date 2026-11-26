@@ -18,17 +18,21 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <!-- ANA EKRAN: vaka seçimi -->
+  <!-- ANA EKRAN -->
   <div class="home" id="home" hidden>
     <header class="home-head">
       <div class="home-kicker">Dedektiflik oyunu</div>
       <h1>Sorgu Odası</h1>
-      <p>Şüphelileri kendi sorularınla sorgula, yalanlarını yakala, belgeleri incele ve katili bul. İstersen vakayı yazdırıp kâğıt üzerinde de çözebilirsin.</p>
+      <p>Şüphelilerin karşısına otur, sorularını sor, yalanlarını yakala ve katili bul. İstersen vakayı yazdırıp kâğıt üzerinde de çözebilirsin.</p>
       <div class="install" id="installBox" hidden>
         <button class="btn primary" id="btnInstall" type="button">Uygulamayı yükle</button>
       </div>
-      <p class="install-hint" id="iosHint" hidden>Uygulama gibi kullanmak için: Paylaş düğmesine, sonra "Ana Ekrana Ekle"ye dokunun.</p>
+      <p class="install-hint" id="iosHint" hidden>Uygulama gibi kullanmak için Paylaş düğmesine, sonra "Ana Ekrana Ekle"ye dokunun.</p>
     </header>
+    <div class="home-top">
+      <div class="rank-card" id="rankCard"></div>
+      <div class="daily-card" id="dailyCard"></div>
+    </div>
     <div class="home-grid" id="homeGrid"></div>
   </div>
 
@@ -42,6 +46,7 @@
         <span class="brand-sub" id="casePlace"></span>
       </div>
       <nav class="top-actions">
+        <span class="clock-chip top-clock" hidden></span>
         <button class="btn ghost desk-only" id="btnCase" type="button">Vaka dosyası</button>
         <button class="btn accent" id="btnAccuse" type="button">Suçla</button>
         <button class="btn ghost icon" id="btnReset" type="button" title="Baştan başla" aria-label="Baştan başla"></button>
@@ -56,12 +61,11 @@
       </aside>
 
       <section class="panel interrogation" id="panelChat">
-        <div class="chat-head" id="chatHead"></div>
-        <div class="chat-log" id="chatLog" aria-live="polite"></div>
+        <div class="room" id="room"></div>
         <div class="chips" id="chips"></div>
         <form class="composer" id="composer" autocomplete="off">
           <button class="btn ghost" id="btnShow" type="button" title="Defterdeki bir bilgiyi göster">Kanıt göster</button>
-          <input class="composer-input" id="input" type="text" maxlength="200" placeholder="Bir soru yazın" enterkeyhint="send" autocapitalize="sentences">
+          <input class="composer-input" id="input" type="text" maxlength="200" placeholder="Bir soru sor" enterkeyhint="send" autocapitalize="sentences">
           <button class="btn primary" id="btnSend" type="submit">Sor</button>
         </form>
       </section>
@@ -98,11 +102,14 @@
   <div class="toasts" id="toasts"></div>
 
   <!-- Vakalar: yeni vaka eklemek için buraya bir satır ekleyin -->
+  <script src="cases/gece-treni.js"></script>
   <script src="cases/son-hasat.js"></script>
 
   <script src="js/engine.js"></script>
   <script src="js/portrait.js"></script>
   <script src="js/docs.js"></script>
+  <script src="js/sound.js"></script>
+  <script src="js/daily.js"></script>
   <script src="js/ui.js"></script>
 </body>
 </html>

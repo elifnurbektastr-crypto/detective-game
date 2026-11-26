@@ -4,7 +4,7 @@
   "description": "Sorgu Odası: Türkçe dedektiflik oyunu",
   "private": true,
   "scripts": {
-    "test": "node tests/story.test.js",
+    "test": "node tests/story.test.js && node tests/all-cases.test.js",
     "pdf": "node tools/build-pdf.js"
   }
 }

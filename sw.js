@@ -1,11 +1,11 @@
 // Çevrimdışı oynayabilmek için uygulama dosyalarını önbellekte tutar.
 // Dosyalar değişince SURUM'u artırın.
-var SURUM = "sorgu-odasi-v3";
+var SURUM = "sorgu-odasi-v4";
 var DOSYALAR = [
   "./", "index.html", "print.html", "manifest.webmanifest",
   "css/style.css", "css/print.css",
-  "js/engine.js", "js/portrait.js", "js/docs.js", "js/ui.js", "js/print.js",
-  "cases/son-hasat.js",
+  "js/engine.js", "js/portrait.js", "js/docs.js", "js/sound.js", "js/daily.js", "js/ui.js", "js/print.js",
+  "cases/son-hasat.js", "cases/gece-treni.js",
   "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"
 ];
 

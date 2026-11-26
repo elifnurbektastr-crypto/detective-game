@@ -80,11 +80,13 @@
   });
   cast.appendChild(grid);
   var victim = el("div", "victim");
-  victim.appendChild(el("b", null, "Maktul: " + C.people.selim.name + " (63)"));
-  victim.appendChild(document.createTextNode(" · Ayazma Bağları'nın sahibi · 14 Eylül, 23:40'ta mahzende ölü bulundu."));
+  victim.appendChild(el("b", null, "Maktul: " + C.print.victim.name));
+  victim.appendChild(document.createTextNode(" · " + C.print.victim.line));
   cast.appendChild(victim);
 
   /* ---------- Zarflar ---------- */
+  var puzzleById = {};
+  (C.puzzles || []).forEach(function (z) { puzzleById[z.id] = z; });
   var docsById = {};
   (C.documents || []).forEach(function (d) { docsById[d.id] = d; });
 
@@ -96,6 +98,7 @@
     cv.appendChild(el("p", "env-note", env.note));
     var inside = el("ul", "env-list");
     env.docs.forEach(function (d) { inside.appendChild(el("li", null, "Belge: " + docsById[d].title)); });
+    (env.puzzles || []).forEach(function (z) { inside.appendChild(el("li", null, "Bulmaca: " + puzzleById[z].title)); });
     env.interviews.forEach(function (iv) { inside.appendChild(el("li", null, "Sorgu tutanağı: " + C.characters[iv.cid].name)); });
     if (env.gate) inside.appendChild(el("li", null, "Geçiş sorusu"));
     cv.appendChild(inside);
@@ -114,7 +117,7 @@
       var ht = el("div");
       ht.appendChild(el("div", "tr-kicker", "SORGU TUTANAĞI · " + env.id + "-" + (ii + 1)));
       ht.appendChild(el("h3", null, ch.name));
-      ht.appendChild(el("div", "tr-role", ch.role + " · 15 Eylül, Ayazma Bağevi"));
+      ht.appendChild(el("div", "tr-role", ch.role + " · " + C.print.where));
       head.appendChild(ht);
       block.appendChild(head);
       iv.items.forEach(function (it) {
@@ -130,6 +133,39 @@
         block.appendChild(row);
       });
       p.appendChild(block);
+    });
+
+    (env.puzzles || []).forEach(function (id) {
+      var z = puzzleById[id];
+      var pz = page("puzzle-page", "Zarf " + env.id + " · Bulmaca");
+      pz.appendChild(el("div", "gate-kicker", z.kind === "kasa" ? "KASA" : "BULMACA"));
+      pz.appendChild(el("h2", "pg-title", z.title));
+      pz.appendChild(el("p", "lead", z.sub + ". " + (z.kind === "kasa" ? z.desc + " Şifreyi sorgu tutanaklarındaki ipuçlarından bulun." : "Parçaları kesip doğru yöne çevirerek birleştirin.")));
+      if (z.kind === "kasa") {
+        var safe = el("div", "print-safe");
+        safe.innerHTML = '<svg viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="220" height="180" rx="14" fill="#3a3f45"/><rect x="30" y="28" width="180" height="40" rx="6" fill="#0d1a0f"/>' +
+          [0, 1, 2, 3].map(function (i) { return '<rect x="' + (44 + i * 40) + '" y="36" width="30" height="24" rx="3" fill="#fff"/>'; }).join("") +
+          '<circle cx="120" cy="130" r="40" fill="#8d949a"/><circle cx="120" cy="130" r="10" fill="#3a3f45"/></svg>';
+        pz.appendChild(safe);
+        pz.appendChild(el("p", "lead center", "Şifreyi kutulara yazın. Doğru olup olmadığını en sondaki ters çevrilmiş cevap sayfasından kontrol edin, sonra bir sonraki sayfadaki kasa içeriğine bakın."));
+        var inside2 = (C.documents || []).filter(function (d) { return (z.gives || []).indexOf(d.unlock) >= 0; })[0];
+        if (inside2) {
+          var pd = page("doc-page", "Kasa içeriği");
+          pd.appendChild(el("div", "gate-kicker", "KASA İÇERİĞİ · ŞİFREYİ BULMADAN BAKMAYIN"));
+          pd.appendChild(Belgeler.render(C, inside2));
+        }
+      } else {
+        var grid = el("div", "cut-pieces");
+        var svgInner = '<rect width="400" height="400" fill="#fffdf5"/><path d="M0 105h400M0 183h400M0 261h400M0 339h400" stroke="#c8d6e5"/><path d="M40 0v400" stroke="#e3a1a8"/>' +
+          z.lines.map(function (l, i) { return '<text x="30" y="' + (95 + i * 78) + '" font-family="Caveat, cursive" font-size="' + (i === 2 ? 38 : 32) + '" fill="' + (i === z.lines.length - 1 ? "#a8323f" : "#1f2f5c") + '">' + l.replace(/&/g, "&amp;").replace(/</g, "&lt;") + "</text>"; }).join("");
+        [[0, 0, 180], [200, 0, 90], [0, 200, 270], [200, 200, 0]].forEach(function (o) {
+          var pc = el("div", "cut-piece");
+          pc.innerHTML = '<svg viewBox="' + o[0] + " " + o[1] + ' 200 200" style="transform:rotate(' + o[2] + 'deg)">' + svgInner + "</svg>";
+          grid.appendChild(pc);
+        });
+        pz.appendChild(grid);
+        pz.appendChild(el("p", "lead center", "Kesik çizgilerden kesin."));
+      }
     });
 
     if (env.gate) {
@@ -149,7 +185,7 @@
   var hr = el("tr"); hr.appendChild(el("th", null, "Saat"));
   Object.keys(C.characters).forEach(function (cid) { hr.appendChild(el("th", null, C.characters[cid].short)); });
   tbl.appendChild(hr);
-  ["20:00", "21:15", "21:30", "21:45", "22:00", "22:30", "22:45", "23:05", "23:10", "23:15", "23:20", "23:40"].forEach(function (t) {
+  C.print.sheetTimes.forEach(function (t) {
     var tr = el("tr"); tr.appendChild(el("td", "t", t));
     Object.keys(C.characters).forEach(function () { tr.appendChild(el("td")); });
     tbl.appendChild(tr);
@@ -177,6 +213,12 @@
   var ans = page("answers", "Geçiş cevapları");
   var inner = el("div", "upside");
   inner.appendChild(el("h2", "pg-title", "Geçiş soruları: cevaplar"));
+  (C.puzzles || []).filter(function (z) { return z.kind === "kasa"; }).forEach(function (z) {
+    var d = el("div", "ans");
+    d.appendChild(el("b", null, "Kasa şifresi (" + z.title + ")"));
+    d.appendChild(el("p", null, z.code + (z.why ? ". " + z.why : "")));
+    inner.appendChild(d);
+  });
   C.print.envelopes.forEach(function (e) {
     if (!e.gate) return;
     var d = el("div", "ans");

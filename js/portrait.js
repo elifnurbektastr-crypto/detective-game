@@ -33,7 +33,8 @@
       '<path d="M40 25 Q50 22 60 25" stroke="S" stroke-width="1" fill="none" opacity=".5"/>'
   };
 
-  function svg(look, id) {
+  // bare: arka plansız çizim (sorgu odasında masanın arkasında oturan kişi için)
+  function svg(look, bare) {
     var L = look || {};
     var skin = L.skin || "#e0b896", hair = L.hair || "#3a2a20", cl = L.clothes || "#444", bg = L.bg || "#2a2420";
     var skinD = shade(skin, -28), hairD = shade(hair, -30), style = L.style || "yana";
@@ -41,8 +42,10 @@
     var lips = L.lips || shade(skin, -55);
     var p = [];
     p.push('<svg class="portrait-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">');
-    p.push('<rect width="100" height="100" fill="' + bg + '"/>');
-    p.push('<circle cx="50" cy="40" r="38" fill="' + shade(bg, 14) + '"/>');
+    if (!bare) {
+      p.push('<rect width="100" height="100" fill="' + bg + '"/>');
+      p.push('<circle cx="50" cy="40" r="38" fill="' + shade(bg, 14) + '"/>');
+    }
     p.push(fill(HAIR_BACK[style] || ""));
     // boyun ve omuzlar
     p.push('<path d="M43 60 L57 60 L58 76 L42 76 Z" fill="' + skinD + '"/>');
@@ -75,11 +78,11 @@
   }
 
   // Bir DOM öğesi döndürür. size: px
-  function portrait(look, size, cls) {
+  function portrait(look, size, cls, bare) {
     var wrap = document.createElement("span");
     wrap.className = "portrait" + (cls ? " " + cls : "");
     if (size) { wrap.style.width = size + "px"; wrap.style.height = size + "px"; }
-    wrap.innerHTML = svg(look);
+    wrap.innerHTML = svg(look, bare);
     return wrap;
   }
 
