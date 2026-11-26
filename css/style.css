@@ -591,3 +591,6 @@ button, .chip, .suspect, .tab, .doc-card, .mobile-nav { -webkit-user-select: non
 .home-foot { display: flex; justify-content: center; margin-top: 34px; }
 .home-foot .btn { color: var(--muted); font-size: 13px; }
 .case-actions .btn { white-space: nowrap; }
+
+.home-foot { flex-direction: column; align-items: center; gap: 10px; }
+.home-foot .version { color: #5f564c; font-size: 11.5px; }
