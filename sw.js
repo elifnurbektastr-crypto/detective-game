@@ -1,6 +1,6 @@
 // Çevrimdışı oynayabilmek için uygulama dosyalarını önbellekte tutar.
 // Dosyalar değişince SURUM'u artırın.
-var SURUM = "sorgu-odasi-v4";
+var SURUM = "sorgu-odasi-v5";
 var DOSYALAR = [
   "./", "index.html", "print.html", "manifest.webmanifest",
   "css/style.css", "css/print.css",
@@ -23,7 +23,7 @@ self.addEventListener("activate", function (e) {
 self.addEventListener("fetch", function (e) {
   if (e.request.method !== "GET") return;
   e.respondWith(
-    fetch(e.request).then(function (res) {
+    fetch(e.request, { cache: "no-cache" }).then(function (res) {
       if (res.ok && new URL(e.request.url).origin === location.origin) {
         var copy = res.clone();
         caches.open(SURUM).then(function (c) { c.put(e.request, copy); });

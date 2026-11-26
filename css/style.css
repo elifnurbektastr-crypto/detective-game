@@ -587,3 +587,7 @@ button, .chip, .suspect, .tab, .doc-card, .mobile-nav { -webkit-user-select: non
 .speech { overflow: visible; }
 .speech-text { max-height: 40vh; overflow-y: auto; }
 .prop.tea { width: 40px; height: 60px; top: -22px; }
+
+.home-foot { display: flex; justify-content: center; margin-top: 34px; }
+.home-foot .btn { color: var(--muted); font-size: 13px; }
+.case-actions .btn { white-space: nowrap; }

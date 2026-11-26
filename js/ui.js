@@ -117,6 +117,12 @@
       }
       grid.appendChild(col);
     });
+    var foot = $("homeFoot"); foot.textContent = "";
+    foot.appendChild(btn("btn ghost", "Tüm ilerlemeyi sil", function () {
+      if (!confirm("Bütün vakalardaki sorular, rütben, rozetlerin ve günün sorgusu geçmişin silinsin mi? Bu geri alınamaz.")) return;
+      try { Object.keys(localStorage).filter(function (k) { return k.indexOf("dedektif:") === 0 && k !== "dedektif:ses" && k !== "dedektif:sesli"; }).forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { /* yok say */ }
+      showHome(); toast("Silindi", "Her şey sıfırlandı.");
+    }));
   }
 
   function renderRankCard() {
@@ -172,6 +178,13 @@
     }));
     var pdf = el("a", "btn ghost", "Yazdır (PDF)"); pdf.href = pdfUrl(c); pdf.target = "_blank"; pdf.rel = "noopener";
     act.appendChild(pdf);
+    if (saved && (saved.questions || saved.started)) {
+      act.appendChild(btn("btn ghost", "Baştan başla", function () {
+        if (!confirm(c.title + " vakasındaki sorular ve notlar silinsin mi? Rütben ve rozetlerin kalır.")) return;
+        try { localStorage.removeItem(saveKey(c)); } catch (e) { /* yok say */ }
+        showHome(); toast("Sıfırlandı", c.title + " baştan başlayacak.");
+      }));
+    }
     card.appendChild(act);
     return card;
   }
@@ -721,6 +734,7 @@
       var act = el("div", "modal-actions");
       var pdf = el("a", "btn ghost", "Yazdır (PDF)"); pdf.href = pdfUrl(CASE); pdf.target = "_blank"; pdf.rel = "noopener";
       act.appendChild(pdf);
+      if (game.s.questions) act.appendChild(btn("btn ghost", "Baştan başla", function () { closeModal(); reset(false); }));
       act.appendChild(btn("btn primary", game.s.started ? "Soruşturmaya dön" : "Başla", closeModal));
       b.appendChild(act);
     }, function () { game.s.started = true; save(); Ses.unlock(); });
@@ -965,7 +979,11 @@
 
   /* ---------- uygulama olarak yükleme ve çevrimdışı ---------- */
   if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
-    navigator.serviceWorker.register("sw.js").catch(function () { /* yok say */ });
+    var hadController = !!navigator.serviceWorker.controller, reloaded = false;
+    navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then(function (r) { r.update(); }).catch(function () { /* yok say */ });
+    navigator.serviceWorker.addEventListener("controllerchange", function () {
+      if (hadController && !reloaded) { reloaded = true; location.reload(); }
+    });
   }
   var installEvent = null;
   window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); installEvent = e; $("installBox").hidden = false; });
@@ -975,7 +993,6 @@
 
   CASES.sort(function (a, b) { return LEVEL_ORDER[a.difficulty] - LEVEL_ORDER[b.difficulty]; });
   var want = new URLSearchParams(location.search).get("vaka");
-  try { want = want || localStorage.getItem("dedektif:son"); } catch (e) { /* yok say */ }
   var found = CASES.filter(function (c) { return c.id === want; })[0];
   if (found) openCase(found); else showHome();
 })();
