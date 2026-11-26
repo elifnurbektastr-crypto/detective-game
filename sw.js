@@ -1,6 +1,6 @@
 // Çevrimdışı oynayabilmek için uygulama dosyalarını önbellekte tutar.
 // Dosyalar değişince SURUM'u artırın.
-var SURUM = "sorgu-odasi-v5";
+var SURUM = "sorgu-odasi-v6";
 var DOSYALAR = [
   "./", "index.html", "print.html", "manifest.webmanifest",
   "css/style.css", "css/print.css",

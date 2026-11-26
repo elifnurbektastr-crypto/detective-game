@@ -118,7 +118,7 @@
       grid.appendChild(col);
     });
     var foot = $("homeFoot"); foot.textContent = "";
-    foot.appendChild(el("span", "version", "Sürüm 5 · sorgu odası, ses, rozetler, kasa"));
+    foot.appendChild(el("span", "version", "Sürüm 6 · sorgu odası, ses, rozetler, kasa"));
     foot.appendChild(btn("btn ghost", "Tüm ilerlemeyi sil", function () {
       if (!confirm("Bütün vakalardaki sorular, rütben, rozetlerin ve günün sorgusu geçmişin silinsin mi? Bu geri alınamaz.")) return;
       try { Object.keys(localStorage).filter(function (k) { return k.indexOf("dedektif:") === 0 && k !== "dedektif:ses" && k !== "dedektif:sesli"; }).forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { /* yok say */ }
