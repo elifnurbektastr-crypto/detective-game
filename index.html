@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Son Hasat · Dedektif Oyunu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <span class="brand-title" id="caseTitle">Son Hasat</span>
+      <span class="brand-sub" id="casePlace"></span>
+    </div>
+    <nav class="top-actions">
+      <button class="btn ghost" id="btnCase" type="button">Vaka dosyası</button>
+      <button class="btn accent" id="btnAccuse" type="button">Suçla</button>
+      <button class="btn ghost" id="btnReset" type="button" title="Baştan başla">↺</button>
+    </nav>
+  </header>
+
+  <main class="layout" id="layout" data-view="sorgu">
+    <aside class="panel suspects" id="panelSuspects">
+      <h2 class="panel-title">Şüpheliler</h2>
+      <ul class="suspect-list" id="suspectList"></ul>
+      <div class="stats" id="stats"></div>
+    </aside>
+
+    <section class="panel interrogation" id="panelChat">
+      <div class="chat-head" id="chatHead"></div>
+      <div class="chat-log" id="chatLog" aria-live="polite"></div>
+      <div class="chips" id="chips"></div>
+      <form class="composer" id="composer" autocomplete="off">
+        <button class="btn ghost" id="btnShow" type="button" title="Defterdeki bir bilgiyi göster">Kanıt göster</button>
+        <input class="composer-input" id="input" type="text" maxlength="200" placeholder="Sorunuzu yazın…">
+        <button class="btn primary" id="btnSend" type="submit">Sor</button>
+      </form>
+    </section>
+
+    <aside class="panel notebook" id="panelNotes">
+      <div class="nb-head">
+        <h2 class="panel-title">Defter</h2>
+        <span class="nb-count" id="nbCount"></span>
+      </div>
+      <div class="tabs" role="tablist" id="nbTabs">
+        <button class="tab active" data-tab="kanit" type="button">Kanıtlar</button>
+        <button class="tab" data-tab="ifade" type="button">İfadeler</button>
+        <button class="tab" data-tab="bag" type="button">Bağlantılar</button>
+      </div>
+      <div class="nb-list" id="nbList"></div>
+    </aside>
+  </main>
+
+  <nav class="mobile-nav" id="mobileNav">
+    <button data-view="supheli" type="button">Şüpheliler</button>
+    <button data-view="sorgu" type="button" class="active">Sorgu</button>
+    <button data-view="defter" type="button">Defter <span class="dot" id="mobileDot"></span></button>
+  </nav>
+
+  <div class="modal" id="modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <button class="modal-close" id="modalClose" type="button" aria-label="Kapat">×</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <div class="toasts" id="toasts"></div>
+
+  <script src="js/story.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/ui.js"></script>
+</body>
+</html>
