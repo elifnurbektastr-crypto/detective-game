@@ -62,12 +62,26 @@
     return any;
   }
 
+  /* Zorluk kuralları. Vaka dosyası "rules" ile bunları ezebilir.
+   *  chips      : önerilen soru sayısı (0 = öneri yok)
+   *  lockHint   : kilitli konuda neyin eksik olduğunu söyle
+   *  minStrong  : kazanmak için gereken güçlü kanıt sayısı
+   *  maxAccuse  : en fazla kaç suçlama yapılabilir (null = sınırsız) */
+  var DIFFICULTY = {
+    kolay: { label: "Kolay", chips: 4, lockHint: true, minStrong: 1, maxAccuse: null },
+    orta: { label: "Orta", chips: 3, lockHint: false, minStrong: 2, maxAccuse: null },
+    zor: { label: "Zor", chips: 0, lockHint: false, minStrong: 3, maxAccuse: 3 }
+  };
+
   function freshState() {
     return { known: [], fresh: [], seen: {}, rot: {}, used: {}, logs: {}, questions: 0, accusations: 0, solved: null, started: false };
   }
 
   function Game(data, saved) {
     this.d = data;
+    this.rules = {};
+    var base = DIFFICULTY[data.difficulty] || DIFFICULTY.orta, over = data.rules || {};
+    Object.keys(base).forEach(function (k) { this.rules[k] = over[k] != null ? over[k] : base[k]; }, this);
     this.facts = {};
     var self = this;
     Object.keys(data.facts).forEach(function (id) { self.facts[id] = data.facts[id]; });
@@ -161,7 +175,8 @@
     var ch = this.d.characters[cid];
     var idx = this._variant(t);
     if (idx < 0) {
-      return { kind: "kilitli", topic: t.id, text: t.locked || this._rot(cid + ":kilit", ch.locked), gained: [] };
+      var text = t.locked || this._rot(cid + ":kilit", ch.locked);
+      return { kind: "kilitli", topic: t.id, text: text, hint: this.rules.lockHint ? this._lockHint(t) : null, gained: [] };
     }
     var v = t.variants[idx];
     var seen = this.s.seen[cid] || (this.s.seen[cid] = {});
@@ -170,6 +185,34 @@
     seen[key] = (seen[key] || 0) + 1;
     var text = repeat && ch.repeat ? this._rot(cid + ":tekrar", ch.repeat) + " " + v.a : v.a;
     return { kind: repeat ? "tekrar" : "cevap", topic: t.id, text: text, gained: this.add(v.gives) };
+  };
+
+  // Kolay seviye: kilidi açmak için en yakın varyantın eksik bilgilerini söyler.
+  Game.prototype._lockHint = function (t) {
+    var self = this, best = null;
+    t.variants.forEach(function (v) {
+      var miss = (v.req || []).filter(function (r) { return !self.has(r); });
+      if (v.any && !v.any.some(function (r) { return self.has(r); })) miss.push(v.any[0]);
+      if (!best || miss.length < best.length) best = miss;
+    });
+    if (!best || !best.length) return null;
+    return "Bu konuyu açmak için şunu bulmalısınız: " + best.map(function (f) { return "“" + self.facts[f].title + "”"; }).join(", ");
+  };
+
+  // Bir bilginin durumu: iddialar teyit bekler; çelişkiyle çürütülen ifadeler işaretlenir.
+  Game.prototype.status = function (fid) {
+    var f = this.facts[fid], self = this;
+    function any(list) { return (list || []).filter(function (x) { return self.has(x); })[0]; }
+    if (any(f.deny)) return "curutuldu";
+    if (any(f.confirm)) return "teyit";
+    if (f.type === "iddia") return "bekliyor";
+    return null;
+  };
+
+  // Açılmış belgeler (otopsi, kroki, deliller…)
+  Game.prototype.documents = function () {
+    var self = this;
+    return (this.d.documents || []).filter(function (d) { return !d.unlock || self.has(d.unlock); });
   };
 
   // En iyi eşleşen konuyu döndürür (test ve hata ayıklama için de kullanılır).
@@ -222,8 +265,9 @@
   // Henüz sorulmamış, şu an açık konulardan örnek sorular.
   Game.prototype.suggestions = function (cid, max) {
     var self = this, seen = this.s.seen[cid] || {}, out = [];
+    var limit = max != null ? max : this.rules.chips;
     this.topics[cid].forEach(function (t) {
-      if (!t.ask || out.length >= (max || 3)) return;
+      if (!t.ask || out.length >= limit) return;
       var idx = self._variant(t);
       if (idx >= 0 && !seen[t.id + "#" + idx]) out.push(t.ask);
     });
@@ -232,19 +276,25 @@
 
   Game.prototype.accuse = function (killer, motive, evidence) {
     var sol = this.d.solution;
+    if (this.accusationsLeft() === 0) return { win: false, over: true, ending: this.d.endings.over || { title: "Dosya kapandı", text: ["Suçlama hakkınız bitti. Savcılık dosyayı faili meçhul olarak kapattı."] } };
     this.s.accusations++;
     var strong = (evidence || []).filter(function (e) { return sol.strong.indexOf(e) >= 0; }).length;
     var res;
     if (killer !== sol.killer) res = { win: false, ending: this.d.endings.wrong[killer] };
     else if (motive !== sol.motive) res = { win: false, ending: this.d.endings.wrongMotive };
-    else if (strong < sol.minStrong) res = { win: false, ending: this.d.endings.weak };
+    else if (strong < (sol.minStrong != null ? sol.minStrong : this.rules.minStrong)) res = { win: false, ending: this.d.endings.weak };
     else res = { win: true, ending: this.d.endings.win, perfect: strong >= sol.strong.length / 2 };
     res.strong = strong;
     if (res.win) this.s.solved = { at: Date.now(), questions: this.s.questions, accusations: this.s.accusations };
     return res;
   };
 
-  var api = { Game: Game, norm: norm };
+  Game.prototype.accusationsLeft = function () {
+    if (this.s.solved || this.rules.maxAccuse == null) return null;
+    return Math.max(0, this.rules.maxAccuse - this.s.accusations);
+  };
+
+  var api = { Game: Game, norm: norm, DIFFICULTY: DIFFICULTY };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.SorguMotoru = api;
 })(this);

@@ -4,6 +4,7 @@
   "description": "Son Hasat — yapay zekâ kullanmayan Türkçe sorgu/dedektif oyunu",
   "private": true,
   "scripts": {
-    "test": "node tests/story.test.js"
+    "test": "node tests/story.test.js",
+    "pdf": "node tools/build-pdf.js"
   }
 }

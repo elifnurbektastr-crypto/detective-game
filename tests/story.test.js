@@ -1,15 +1,15 @@
-// Çalıştır: node tests/story.test.js
+// Çalıştır: node tests/story.test.js   (veya npm test)
 "use strict";
 var assert = require("assert");
 var Engine = require("../js/engine.js");
-var CASE = require("../js/story.js");
+var CASE = require("../cases/son-hasat.js");
 
 var fails = 0, passes = 0;
 function test(name, fn) {
   try { fn(); passes++; console.log("  ✓ " + name); }
   catch (e) { fails++; console.log("  ✗ " + name + "\n      " + e.message); }
 }
-function fresh() { return new Engine.Game(CASE); }
+function fresh(over) { return new Engine.Game(over ? Object.assign({}, CASE, over) : CASE); }
 
 console.log("\nVeri bütünlüğü");
 test("tüm bilgi referansları tanımlı", function () {
@@ -18,6 +18,11 @@ test("tüm bilgi referansları tanımlı", function () {
   CASE.startFacts.forEach(function (f) { chk(f, "startFacts"); });
   CASE.links.forEach(function (l) { l.when.forEach(function (w) { chk(w, "link " + l.id); }); });
   CASE.solution.strong.forEach(function (f) { chk(f, "solution"); });
+  Object.keys(CASE.facts).forEach(function (id) {
+    var f = CASE.facts[id];
+    (f.confirm || []).concat(f.deny || []).forEach(function (x) { chk(x, id + " confirm/deny"); });
+  });
+  (CASE.documents || []).forEach(function (d) { if (d.unlock) chk(d.unlock, "belge " + d.id); });
   Object.keys(CASE.characters).forEach(function (cid) {
     var all = g.topics[cid].concat(Object.keys(g.shows[cid]).map(function (k) { chk(k, cid + " show"); return g.shows[cid][k]; }));
     all.forEach(function (t) {
@@ -25,9 +30,30 @@ test("tüm bilgi referansları tanımlı", function () {
         (v.gives || []).concat(v.req || [], v.any || []).forEach(function (f) { chk(f, cid + "/" + t.id); });
       });
     });
-    CASE.characters[cid].deflect.forEach(function (d) { if (d.until) chk(d.until, cid + " deflect"); });
+    CASE.characters[cid].deflect.forEach(function (d) {
+      if (d.until) chk(d.until, cid + " deflect");
+      (d.gives || []).forEach(function (f) { chk(f, cid + " deflect"); });
+    });
+    if (!CASE.looks[cid]) missing.push("portre " + cid);
   });
   assert.deepStrictEqual(missing, []);
+});
+
+test("yazdırma setindeki her tutanak satırı bir cevaba çözülüyor", function () {
+  var g = fresh(), bad = [];
+  CASE.print.envelopes.forEach(function (env) {
+    env.docs.forEach(function (d) { if (!CASE.documents.some(function (x) { return x.id === d; })) bad.push("belge " + d); });
+    env.interviews.forEach(function (iv) {
+      iv.items.forEach(function (it) {
+        var t = it.show ? g.shows[iv.cid][it.show] : g.topics[iv.cid].filter(function (x) { return x.id === it.t; })[0];
+        if (!t) { bad.push(env.id + "/" + iv.cid + "/" + (it.t || it.show)); return; }
+        var v = t.variants[it.v || 0];
+        if (!v || !v.a) bad.push(env.id + "/" + iv.cid + "/" + (it.t || it.show) + " v" + it.v);
+        if (!it.show && !it.q && !t.ask) bad.push(env.id + "/" + iv.cid + "/" + it.t + " soru metni yok");
+      });
+    });
+  });
+  assert.deepStrictEqual(bad, []);
 });
 
 console.log("\nTürkçe normalleştirme");
@@ -50,7 +76,7 @@ Object.keys(CASE.characters).forEach(function (cid) {
 });
 
 console.log("\nSerbest yazılmış sorular");
-var free = [
+[
   ["defne", "babanı kim öldürdü sence", "katil"],
   ["defne", "Nerdeydin o gece?", "nerede"],
   ["defne", "amcan hakkında ne düşünüyorsun", "hakkinda_kenan"],
@@ -68,8 +94,7 @@ var free = [
   ["murat", "hesaplarda açık var mı, para nereye gitti", "hesap"],
   ["murat", "selim nasıl öldü", "nasil"],
   ["murat", "lavanta kolonyası mı kullanıyorsunuz", "koku"]
-];
-free.forEach(function (f) {
+].forEach(function (f) {
   test(f[0] + ": “" + f[1] + "” → " + f[2], function () {
     var m = fresh().match(f[0], f[1]);
     assert.ok(m, "eşleşme yok");
@@ -77,20 +102,38 @@ free.forEach(function (f) {
   });
 });
 
-console.log("\nYönlendirme ve kilitler");
-test("anlamsız soru yönlendirme cevabı alır ve bulunmamış bilgiye işaret eder", function () {
+console.log("\nKaçamak cevaplar, iddialar ve kilitler");
+test("kaçamak cevap hedef göstermek yerine bildiğini söyler ve deftere ekler", function () {
   var g = fresh();
   var r = g.ask("hulya", "hava nasıl yarın");
   assert.strictEqual(r.kind, "yonlendirme");
-  assert.ok(/mum/.test(r.text), r.text);
+  assert.ok(r.gained.length > 0, "bilgi vermedi: " + r.text);
   var r2 = g.ask("hulya", "futbol sever misiniz");
-  assert.notStrictEqual(r2.text, r.text, "yönlendirmeler dönmeli");
+  assert.notStrictEqual(r2.text, r.text, "kaçamak cevaplar dönmeli");
+});
+test("hiçbir kaçamak cevap 'ona sorun' diye yönlendirmiyor", function () {
+  var bad = [];
+  Object.keys(CASE.characters).forEach(function (cid) {
+    CASE.characters[cid].deflect.forEach(function (d) { if (/\bsorun\b|sorsanız|sorarsanız/i.test(d.a)) bad.push(cid + ": " + d.a); });
+  });
+  assert.deepStrictEqual(bad, []);
+});
+test("iddia başka şüpheliden teyit edilir, yalan çürütülür", function () {
+  var g = fresh();
+  g.ask("defne", "en sevdiğin renk ne");
+  assert.strictEqual(g.status("ii_tehdit"), "bekliyor");
+  g.ask("kenan", "yemekte neden kavga ettiniz");
+  assert.strictEqual(g.status("ii_tehdit"), "teyit");
+  g.ask("defne", "o gece neredeydin");
+  g.ask("hulya", "defne hanım odasında mıydı");
+  assert.strictEqual(g.status("i_defne_oda"), "curutuldu");
 });
 test("kilitli konu kaçamak cevap verir, bilgi verilmez", function () {
   var g = fresh();
   var r = g.ask("defne", "babanın çalışma odasından ajandayı aldın mı");
   assert.strictEqual(r.kind, "kilitli");
   assert.ok(!g.has("k_ajanda"));
+  assert.ok(!r.hint, "orta seviyede kilit ipucu verilmemeli");
 });
 test("yalan çelişkiyle kırılır", function () {
   var g = fresh();
@@ -99,6 +142,26 @@ test("yalan çelişkiyle kırılır", function () {
   assert.ok(g.has("c_defne"));
   var r = g.ask("defne", "o gece neredeydin");
   assert.ok(g.has("i_defne_iskele"), r.text);
+});
+test("belgeler kanıtla açılır", function () {
+  var g = fresh();
+  var ids = function () { return g.documents().map(function (d) { return d.id; }); };
+  assert.deepStrictEqual(ids(), ["otopsi", "kroki", "sise"]);
+  g.add(["k_dugme"]);
+  assert.ok(ids().indexOf("dugme") >= 0);
+});
+
+console.log("\nZorluk");
+test("zor: öneri yok, suçlama hakkı sınırlı", function () {
+  var g = fresh({ difficulty: "zor" });
+  assert.strictEqual(g.suggestions("defne").length, 0);
+  for (var i = 0; i < 3; i++) g.accuse("kenan", "arazi", ["k_otopsi"]);
+  assert.strictEqual(g.accusationsLeft(), 0);
+  assert.strictEqual(g.accuse("murat", "zimmet", ["k_dugme", "c_murat_sise", "d_motive"]).over, true);
+});
+test("kolay: kilitli konu neyin eksik olduğunu söyler", function () {
+  var r = fresh({ difficulty: "kolay" }).ask("defne", "babanın çalışma odasından ajandayı aldın mı");
+  assert.ok(r.hint && /İskeledeki tanıklar/.test(r.hint), r.hint);
 });
 
 console.log("\nÇözüm yolu");
@@ -125,16 +188,17 @@ test("oyun baştan sona çözülebiliyor", function () {
   assert.ok(g.has("d_motive"));
   assert.strictEqual(g.accuse("kenan", "arazi", []).win, false);
   assert.strictEqual(g.accuse("murat", "miras", ["k_dugme", "c_murat_sise"]).win, false);
-  assert.strictEqual(g.accuse("murat", "zimmet", ["i_kenan_tehdit"]).win, false);
+  assert.strictEqual(g.accuse("murat", "zimmet", ["ii_tehdit"]).win, false);
   assert.strictEqual(g.accuse("murat", "zimmet", ["k_dugme", "c_murat_sise", "d_motive"]).win, true);
 });
 
-test("her bilgiye ulaşılabiliyor (tüm soru ve kanıtları dene)", function () {
+test("her bilgiye ulaşılabiliyor (tüm sorular, kanıtlar ve kaçamak cevaplar)", function () {
   var g = fresh(), before = -1;
   while (g.s.known.length !== before) {
     before = g.s.known.length;
     Object.keys(CASE.characters).forEach(function (cid) {
       g.topics[cid].forEach(function (t) { g._respond(cid, t); });
+      CASE.characters[cid].deflect.forEach(function () { g._deflect(cid); });
       g.s.known.slice().forEach(function (f) { g.show(cid, f); });
     });
   }

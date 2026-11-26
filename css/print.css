@@ -1,0 +1,114 @@
+/* Yazdırılabilir vaka seti: A4 */
+@page {
+  size: A4;
+  margin: 16mm 15mm 18mm;
+  @bottom-center { content: "Sorgu Odası · Vaka dosyası · " counter(page); font: 9px Inter, Arial, sans-serif; color: #7a6a55; }
+}
+
+html, body.print-body { height: auto; }
+body.print-body {
+  display: block; overflow: visible;
+  background: #5b524a; color: var(--paper-ink);
+  font-size: 13px; line-height: 1.55;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+.print-bar { position: sticky; top: 0; z-index: 5; display: flex; gap: 14px; align-items: center; padding: 10px 16px; background: #1b1815; color: var(--ink); font-size: 13px; }
+.print-bar a { color: var(--gold); }
+.print-bar span { flex: 1; color: var(--muted); }
+.print-bar button { background: var(--paper); color: var(--paper-ink); border: 0; border-radius: 999px; padding: 8px 16px; font-weight: 600; }
+
+#book { padding: 24px 0 60px; }
+.page {
+  position: relative; background: var(--paper); width: 210mm; min-height: 297mm; margin: 0 auto 18px;
+  padding: 18mm 16mm 20mm; box-shadow: 0 6px 24px rgba(0,0,0,.35);
+  break-after: page; page-break-after: always;
+}
+.page-foot { position: absolute; left: 16mm; right: 16mm; bottom: 9mm; display: flex; justify-content: space-between; font-size: 9px; letter-spacing: .08em; color: #7a6a55; }
+.pg-title { font-family: var(--serif); font-size: 26px; margin: 0 0 12px; color: var(--paper-ink); }
+.page h3 { font-family: var(--serif); font-size: 17px; margin: 18px 0 8px; }
+.lead { font-size: 14px; margin-bottom: 10px; }
+.center { text-align: center; }
+
+/* Kapak */
+.cover { display: flex; flex-direction: column; justify-content: center; text-align: center; background: #1b1815 !important; color: #efe6d2; }
+.cover .page-foot { color: #9d9284; }
+.stamp { align-self: center; border: 3px solid #c44a57; color: #e8848e; font-weight: 700; letter-spacing: .2em; padding: 6px 14px; transform: rotate(-4deg); font-size: 13px; margin-bottom: 40px; }
+.cover-kicker { color: var(--gold); letter-spacing: .16em; text-transform: uppercase; font-size: 12px; }
+.cover h1 { font-family: var(--serif); font-size: 72px; line-height: 1; margin: 10px 0 6px; color: #efe6d2; }
+.cover-sub { font-family: var(--serif); font-size: 22px; color: #d8cfbf; }
+.cover-tag { max-width: 120mm; margin: 18px auto 0; color: #b5aa99; font-size: 15px; }
+.cover-faces { display: flex; gap: 10px; justify-content: center; margin: 34px 0; }
+.cover-meta { display: flex; justify-content: center; gap: 36px; margin-bottom: 30px; }
+.cover-meta small { display: block; color: #9d9284; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+.cover-meta b { font-family: var(--serif); font-size: 18px; }
+.toc { text-align: left; margin: 0 auto; columns: 2; column-gap: 40px; max-width: 150mm; color: #d8cfbf; font-size: 13px; padding-left: 18px; }
+
+.rules { padding-left: 20px; font-size: 14px; }
+.rules li { margin-bottom: 8px; }
+.tip { margin: 16px 0 26px; padding: 10px 12px; background: #e6dbc3; border-radius: 6px; font-size: 12.5px; }
+
+.cast-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.cast-card { display: flex; gap: 14px; align-items: flex-start; padding: 12px; border: 1px solid #d3c3a3; border-radius: 8px; background: #f7f0e1; break-inside: avoid; }
+.cast-card h3 { margin: 0; font-size: 18px; }
+.cast-role { color: #a8323f; font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+.cast-card p { font-size: 13px; }
+.victim { margin-top: 20px; padding: 12px; border: 2px solid #2a221b; border-radius: 6px; }
+
+/* Zarf kapağı */
+.envelope { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: #d9c9a6 !important; }
+.env-letter { width: 120px; height: 120px; border-radius: 50%; background: #a8323f; color: #fff; font-family: var(--serif); font-size: 72px; display: grid; place-items: center; margin-bottom: 20px; }
+.envelope h2 { font-family: var(--serif); font-size: 40px; letter-spacing: .1em; }
+.env-title { font-family: var(--serif); font-size: 24px; margin-top: 4px; }
+.env-note { margin: 14px 0 24px; font-weight: 600; color: #a8323f; }
+.env-list { text-align: left; font-size: 13.5px; padding-left: 18px; }
+
+/* Belge sayfası */
+.doc-page { padding-top: 14mm; }
+.doc-page .doc { box-shadow: none; padding: 0; background: transparent; }
+.doc-page .doc-note { padding: 18px; }
+.doc-page .doc-art { break-inside: avoid; }
+
+/* Tutanaklar */
+.transcript { margin-bottom: 22px; }
+.tr-head { display: flex; gap: 12px; align-items: center; border-bottom: 2px solid #2a221b; padding-bottom: 8px; margin-bottom: 8px; break-after: avoid; }
+.tr-head h3 { margin: 0; font-size: 19px; }
+.tr-kicker { font-size: 10px; letter-spacing: .14em; color: #7a6a55; }
+.tr-role { font-size: 12px; color: #6d5a45; }
+.qa { break-inside: avoid; margin: 0 0 8px; }
+.qa .q { color: #6d5a45; font-style: italic; }
+.qa .q.shown { color: #a8323f; }
+.qa .a { margin-left: 14px; }
+
+/* Geçiş ve formlar */
+.gate .gate-kicker { color: #a8323f; letter-spacing: .14em; font-weight: 700; font-size: 12px; margin-top: 30mm; }
+.gate h2 { font-family: var(--serif); font-size: 26px; margin: 10px 0 14px; }
+.write-lines .wl { border-bottom: 1px solid #b9a988; height: 30px; }
+table.work { width: 100%; border-collapse: collapse; font-size: 12px; }
+table.work th, table.work td { border: 1px solid #b9a988; padding: 6px; height: 46px; vertical-align: top; }
+table.work th { height: auto; background: #e6dbc3; }
+table.work td.t, table.timeline td.t { font-weight: 700; white-space: nowrap; width: 54px; }
+.checks { display: flex; flex-wrap: wrap; gap: 10px 22px; }
+.checks.col { flex-direction: column; }
+.check::before { content: ""; display: inline-block; width: 13px; height: 13px; border: 1.5px solid #2a221b; margin-right: 8px; vertical-align: -2px; }
+.num-line { border-bottom: 1px solid #b9a988; height: 34px; display: flex; align-items: flex-end; padding-bottom: 4px; }
+
+.answers .upside { transform: rotate(180deg); }
+.ans { margin-bottom: 18px; }
+.ans b { display: block; margin-bottom: 4px; }
+
+.seal { display: flex; flex-direction: column; justify-content: center; align-items: center; background: #1b1815 !important; color: #efe6d2; }
+.seal h2 { font-family: var(--serif); font-size: 56px; letter-spacing: .14em; }
+.seal-mark { width: 150px; height: 150px; border-radius: 50%; background: #a8323f; color: #fff; display: grid; place-items: center; font-weight: 700; letter-spacing: .2em; font-size: 15px; box-shadow: 0 0 0 8px #7e1f2b; margin-bottom: 26px; }
+table.timeline { width: 100%; border-collapse: collapse; }
+table.timeline td { padding: 5px 8px; border-bottom: 1px dotted #b9a988; vertical-align: top; }
+.proof li { margin-bottom: 6px; }
+
+@media print {
+  body.print-body { background: none; }
+  .no-print { display: none !important; }
+  #book { padding: 0; }
+  .page { width: auto; min-height: 0; margin: 0; padding: 0; box-shadow: none; background: transparent; }
+  .page-foot { display: none; }
+  .cover, .seal, .envelope { min-height: 262mm; padding: 10mm; }
+  .gate .gate-kicker { margin-top: 10mm; }
+}

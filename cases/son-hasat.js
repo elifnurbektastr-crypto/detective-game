@@ -24,6 +24,10 @@
 
   var CASE = {
     id: "son-hasat",
+    difficulty: "orta",
+    duration: "60–90 dk",
+    players: "1–4 oyuncu",
+    tagline: "Fırtınalı bir hasat gecesi, mahzende bir ceset ve sırlarını saklayan beş kişi.",
     title: "Son Hasat",
     subtitle: "Ayazma Bağevi Cinayeti",
     place: "Bozcaada · 14 Eylül · Poyraz fırtınası",
@@ -43,14 +47,14 @@
 
     /* ---------------- DEFTER: kanıtlar ve ifadeler ---------------- */
     facts: {
-      k_otopsi: { type: "kanit", title: "Ön otopsi raporu", text: "Ölüm saati 23:00–23:20. Başın arkasına tek, ağır bir darbe. Raf, ölümden SONRA devrilmiş; olaya kaza süsü verilmiş.", source: "Adli tabip" },
+      k_otopsi: { type: "kanit", title: "Ön otopsi raporu", text: "Ölüm 23:00–23:20 arası; kol saati 23:12'de durmuş. Başın arkasına tek, ağır darbe; yarada yeşil cam. Savunma izi yok. Raf ölümden SONRA devrilmiş, kaza süsü verilmiş. Ceketin yakasında kurbana ait olmayan çiçeksi bir esans izi. Tam rapor: Belgeler.", source: "Adli tabip" },
       k_sise: { type: "kanit", title: "Kırık magnum şişe", text: "Rafın dibinde kırık bir 1987 magnum şişe, tabanında kan. Cinayet silahı olduğu düşünülüyor. Bu bilgi şüphelilerle PAYLAŞILMADI; onlara “raf devrildi” denildi.", source: "Olay yeri" },
       k_elektrik: { type: "kanit", title: "Elektrik kesintisi", text: "Fırtına yüzünden elektrik 23:05–23:20 arasında kesildi. Jeneratör mahzende. Selim jeneratörü çalıştırmak için aşağı inmiş olmalı.", source: "Olay yeri" },
       k_dugme: { type: "kanit", title: "Gümüş kol düğmesi", text: "Üzerinde “M.Ö.” harfleri olan gümüş bir kol düğmesi. Hülya sabah mahzen merdiveninin dibinde bulmuş.", source: "Hülya" },
       k_ajanda: { type: "kanit", title: "Selim'in ajandası", text: "14 Eylül sayfası, Selim'in el yazısıyla: “Kasadaki açık Barış değilmiş. M. — 4,2 milyon. Yarın denetçi. Affetmeyeceğim. Barış'tan özür dilemeliyim.”", source: "Defne" },
       k_kenan_alibi: { type: "ifade", title: "İskeledeki tanıklar", text: "Defne ve Emre 22:30–23:35 arası gizlice iskelede birlikteydi. Kenan'ı 22:55–23:25 arası bekçi kulübesinin önünde sigara içerken gördüler; hiç ayrılmadı.", source: "Defne & Emre" },
 
-      i_hulya_merdiven: { type: "ifade", title: "Merdivendeki gölge", text: "23:15'te arka merdivende mahzen tarafından hızla çıkan uzun boylu birini gördü. Mum söndü; “Kenan Bey'di” diyor.", source: "Hülya" },
+      i_hulya_merdiven: { type: "ifade", title: "Merdivendeki gölge", text: "23:15'te arka merdivende mahzen tarafından hızla çıkan uzun boylu birini gördü. Mum söndü; “Kenan Bey'di” diyor.", source: "Hülya", deny: ["c_hulya_kenan"] },
       i_hulya_lavanta: { type: "ifade", title: "Lavanta kokusu", text: "Merdivende yanından geçen kişiden lavanta kokusu geliyordu. “Kenan Bey tütün kokar.”", source: "Hülya" },
       i_hulya_denetci: { type: "ifade", title: "Çalışma odasındaki kavga", text: "21:30'da Selim, Murat'a bağırıyordu: “Yarın Ankara'dan denetçi geliyor, her kuruşa bakacak!” Murat bembeyaz olmuş.", source: "Hülya" },
       i_hulya_defne_oda: { type: "ifade", title: "Boş oda", text: "22:45'te Defne'ye ıhlamur götürdü. Oda boştu, yatak bozulmamıştı.", source: "Hülya" },
@@ -60,28 +64,37 @@
       i_hulya_sofra: { type: "ifade", title: "Sofrada düğme yoktu", text: "Yemekten sonra sofrayı tek tek kendisi topladı; masada kol düğmesi yoktu.", source: "Hülya" },
       i_hulya_baris: { type: "ifade", title: "Barış'ın kovulması", text: "Hülya'nın oğlu Barış iki yıl önce kasadan para çalmakla suçlanıp kovuldu. Hülya oğlunun masum olduğuna yemin ediyor.", source: "Hülya" },
 
-      i_kenan_eve: { type: "ifade", title: "Kenan'ın mazereti", text: "21:15'te çıkıp evine gittiğini, sabaha kadar çıkmadığını söylüyor.", source: "Kenan" },
-      i_kenan_tehdit: { type: "ifade", title: "Yemekteki tehdit", text: "Kenan yemekten çıkarken Selim'e “Bu bağ seni de gömecek” dedi. Kuyu ve su hakkı yüzünden kavgalılar.", source: "Görgü tanıkları" },
+      i_kenan_eve: { type: "ifade", title: "Kenan'ın mazereti", text: "21:15'te çıkıp evine gittiğini, sabaha kadar çıkmadığını söylüyor.", source: "Kenan", deny: ["c_kenan"] },
+      i_kenan_tehdit: { type: "ifade", title: "Kenan tehdidi kabul etti", text: "Kenan yemekte “Bu bağ seni de gömecek” dediğini kabul ediyor: “Öfkeyle söylenmiş laf.” Kuyu ve su hakkı yüzünden kavgalılar.", source: "Kenan" },
+
+      /* İddialar: birinin başkası hakkında söylediği, teyit edilmesi gereken bilgiler.
+         confirm: bu bilgilerden biri bulununca "teyit edildi" olur. */
+      ii_tehdit: { type: "iddia", title: "Yemekteki tehdit", text: "Kenan yemekten çıkarken Selim'e “Bu bağ seni de gömecek” demiş.", source: "Söylenti", confirm: ["i_kenan_tehdit"] },
+      ii_murat_hesap: { type: "iddia", title: "Selim, Murat'a hesap soruyordu", text: "Selim son günlerde Murat'a hesap soruyormuş; aralarında soğukluk varmış.", source: "Defne", confirm: ["i_hulya_denetci", "i_kenan_murat"] },
+      ii_merdiven: { type: "iddia", title: "Merdivende biri mi vardı?", text: "Hülya sabah mutfakta, gece arka merdivende birini gördüğünü anlatıyormuş.", source: "Emre", confirm: ["i_hulya_merdiven"] },
+      ii_defne_borc: { type: "iddia", title: "Defne borç içinde mi?", text: "Defne'nin galerisi batmak üzereymiş, borçları ciddiymiş.", source: "Murat", confirm: ["i_defne_borc"] },
+      ii_iliski: { type: "iddia", title: "Defne ile Emre?", text: "Emre ile Defne'nin birbirine fazla yakın olduğu söyleniyor.", source: "Murat / Kenan", confirm: ["k_kenan_alibi"] },
+      ii_baris: { type: "iddia", title: "Barış'a haksızlık mı edildi?", text: "Barış hırsız değilmiş; onu suçlayan dosya “kokuyormuş”.", source: "Kenan", confirm: ["k_ajanda"] },
       i_kenan_fener: { type: "ifade", title: "Kaçan fener", text: "Işıklar sönünce, 23:15 gibi, mahzen kapısından bir el feneri ışığının evin arka merdivenine doğru koştuğunu gördü.", source: "Kenan" },
       i_kenan_murat: { type: "ifade", title: "Selim'in şüphesi", text: "Selim geçen hafta Kenan'a “Murat'a hesap sordum, kıvırıyor” demiş.", source: "Kenan" },
 
-      i_defne_oda: { type: "ifade", title: "Defne'nin mazereti", text: "22:15'te odasına çıkıp uyuduğunu söylüyor.", source: "Defne" },
+      i_defne_oda: { type: "ifade", title: "Defne'nin mazereti", text: "22:15'te odasına çıkıp uyuduğunu söylüyor.", source: "Defne", deny: ["c_defne"] },
       i_defne_iskele: { type: "ifade", title: "Defne iskeledeydi", text: "Odasında değil, iskeledeymiş. Yalnız değilmiş ama kiminle olduğunu söylemiyor.", source: "Defne" },
       i_defne_vasiyet: { type: "ifade", title: "Yeni vasiyet", text: "Selim 22:00'de Defne'ye bağı bir vakfa bırakacağını söyledi.", source: "Defne" },
-      i_defne_borc: { type: "ifade", title: "Defne'nin borçları", text: "Defne'nin İstanbul'daki galerisi batmak üzere, ciddi borçları var.", source: "Defne / Murat" },
+      i_defne_borc: { type: "ifade", title: "Defne'nin borçları", text: "Defne galerisinin batmak üzere olduğunu ve borçlu olduğunu kabul ediyor.", source: "Defne" },
       i_defne_dugme: { type: "ifade", title: "Hediye kol düğmeleri", text: "Defne, “M.Ö.” kol düğmelerini Murat'a yıllar önce kendisinin hediye ettiğini söylüyor.", source: "Defne" },
 
-      i_emre_lab: { type: "ifade", title: "Emre'nin mazereti", text: "Bütün gece laboratuvarda tankları kontrol ettiğini söylüyor.", source: "Emre" },
+      i_emre_lab: { type: "ifade", title: "Emre'nin mazereti", text: "Bütün gece laboratuvarda tankları kontrol ettiğini söylüyor.", source: "Emre", deny: ["c_emre"] },
       i_emre_disarida: { type: "ifade", title: "Emre dışarıdaydı", text: "22:15'te laboratuvardan çıkmış. Birini korumak için nerede olduğunu söylemiyor.", source: "Emre" },
       i_emre_koku: { type: "ifade", title: "Mahzendeki koku", text: "Cesedi bulduğunda mahzende şaraptan başka çiçeksi, kuru, sabunumsu bir koku vardı.", source: "Emre" },
-      i_emre_kovulmadi: { type: "ifade", title: "“Kovulmadım”", text: "Emre, Selim'le sadece küçük bir anlaşmazlık yaşadığını, kovulmadığını söylüyor.", source: "Emre" },
+      i_emre_kovulmadi: { type: "ifade", title: "“Kovulmadım”", text: "Emre, Selim'le sadece küçük bir anlaşmazlık yaşadığını, kovulmadığını söylüyor.", source: "Emre", deny: ["c_emre_kovma"] },
       i_emre_fatura: { type: "ifade", title: "Tutmayan faturalar", text: "Emre bir ay önce ihracat faturalarında tutmayan rakamlar görüp Selim'e bildirmiş. Selim ondan sonra hesapları incelemeye başlamış.", source: "Emre" },
 
-      i_murat_oda: { type: "ifade", title: "Murat'ın mazereti", text: "22:00'den sabaha kadar odasında vasiyetnameyi hazırladığını, hiç çıkmadığını söylüyor.", source: "Murat" },
+      i_murat_oda: { type: "ifade", title: "Murat'ın mazereti", text: "22:00'den sabaha kadar odasında vasiyetnameyi hazırladığını, hiç çıkmadığını söylüyor.", source: "Murat", deny: ["c_murat_oda"] },
       i_murat_sise: { type: "ifade", title: "Murat'ın dil sürçmesi", text: "Murat ölümü anlatırken “o şişeyle… o darbeyle” dedi.", source: "Murat" },
-      i_murat_dugme: { type: "ifade", title: "Murat'ın düğme açıklaması", text: "Murat kol düğmesini “akşam yemeğinde düşürdüğünü” söyledi.", source: "Murat" },
+      i_murat_dugme: { type: "ifade", title: "Murat'ın düğme açıklaması", text: "Murat kol düğmesini “akşam yemeğinde düşürdüğünü” söyledi.", source: "Murat", deny: ["c_murat_dugme"] },
       i_murat_lavanta: { type: "ifade", title: "Lavanta kolonyası", text: "Murat otuz yıldır aynı lavanta kolonyasını kullanıyor.", source: "Tanıklar" },
-      i_murat_hesap: { type: "ifade", title: "“Hesaplar temiz”", text: "Murat hesaplarda hiçbir sorun olmadığını, denetçinin Selim'in “takıntısı” olduğunu söyledi.", source: "Murat" },
+      i_murat_hesap: { type: "ifade", title: "“Hesaplar temiz”", text: "Murat hesaplarda hiçbir sorun olmadığını, denetçinin Selim'in “takıntısı” olduğunu söyledi.", source: "Murat", deny: ["c_murat_hesap"] },
       i_murat_baris: { type: "ifade", title: "Barış dosyası", text: "Barış'ı kasadaki açıkla suçlayan dosyayı Murat hazırlamış.", source: "Murat" }
     },
 
@@ -157,7 +170,6 @@
     solution: {
       killer: "murat",
       motive: "zimmet",
-      minStrong: 2,
       strong: ["k_dugme", "c_murat_dugme", "c_murat_sise", "c_murat_oda", "d_koku", "d_merdiven", "d_motive", "k_ajanda", "c_murat_hesap", "d_baris", "i_hulya_lavanta", "i_defne_dugme"]
     },
 
@@ -211,7 +223,7 @@
             { req: ["i_defne_iskele"], a: "Adını vermeyeceğim. Söylersem onun da hayatı mahvolur. Önce ona sorun. O söylerse ben de söylerim." },
             { req: ["i_defne_iskele", "i_emre_disarida"], a: "Emre de anlattı demek… Peki. Bir yıldır birlikteyiz; babam asla kabul etmezdi. O gece 22:30'dan 23:35'e kadar iskeledeydik. Işıklar sönmeden az önce bekçi kulübesinin önüne biri gelip sigara yaktı. Amcamdı, o eski fenerini her yerde tanırım. Işıklar gelene kadar, 23:25'e kadar kıpırdamadı. Biz de görmesin diye saklandık.", gives: ["k_kenan_alibi"] }
           ] },
-          { id: "tartisma", ask: "Akşam yemeğinde ne oldu?", a: "Amcamla babam yine kuyu yüzünden birbirine girdi. Amcam çıkarken “Bu bağ seni de gömecek Selim” dedi. Herkes duydu.", gives: ["i_kenan_tehdit"] },
+          { id: "tartisma", ask: "Akşam yemeğinde ne oldu?", a: "Amcamla babam yine kuyu yüzünden birbirine girdi. Amcam çıkarken “Bu bağ seni de gömecek Selim” dedi. Herkes duydu.", gives: ["ii_tehdit"] },
           { id: "vasiyet", ask: "Vasiyet konusunda ne biliyorsunuz?", a: "Babam 22:00'de beni çalışma odasına çağırdı. Bağı bir vakfa bırakacakmış. “Sen burayı satarsın” dedi. Belki haklıydı da. Evet, bu bana bir sebep veriyor. Ama ben yapmadım.", gives: ["i_defne_vasiyet"] },
           { id: "borc", a: "Galerim batıyor, evet. Kim söyledi, Murat amca mı? Borcum var ama babamı öldürecek kadar değil.", gives: ["i_defne_borc"] },
           { id: "elektrik", ask: "Işıklar söndüğünde ne oldu?", v: [
@@ -280,12 +292,12 @@
         repeat: ["Bunu zaten söyledim.", "Tekrar mı soruyorsunuz? Peki:", "Aynı soru. Aynı cevap:"],
         locked: ["Bu konuyu konuşmak istemiyorum.", "Şimdi olmaz.", "Elinizde bir şey yoksa bu konuda konuşmam."],
         deflect: [
-          { a: "Bunu bilmiyorum. Ama amcama yemekte babama ne dediğini sorun.", until: "i_kenan_tehdit" },
-          { a: "Bilmiyorum. Babamın son günlerde neden bu kadar gergin olduğunu merak ediyorsanız Murat amcaya hesapları sorun.", until: "i_hulya_denetci" },
-          { a: "Bu konuda bir fikrim yok. Hülya Abla bu evde olan her şeyi bilir, ona sorun.", until: "i_hulya_merdiven" },
-          { a: "Sorularınız dağınık, dedektif. O gece kim neredeydi, ona odaklanın." },
+          { a: "Bunu bilmiyorum. Ama şunu söyleyeyim: amcam yemekten çıkarken babama “Bu bağ seni de gömecek” dedi. Herkes duydu.", gives: ["ii_tehdit"], until: "ii_tehdit" },
+          { a: "Bilmiyorum. Bildiğim tek şey, babamın son günlerde Murat amcaya hesap sorduğu. Aralarında bir soğukluk vardı.", gives: ["ii_murat_hesap"], until: "ii_murat_hesap" },
+          { a: "O gece ev zifiri karanlıktı. Ben bir şey görmedim, görmek de istemedim." },
+          { a: "Sorularınız dağınık, dedektif. Babamın neden öldüğünü bulmanız gerekiyor, benim ne hissettiğimi değil." },
           { a: "Bilmiyorum, gerçekten. Babamı kaybettim, kafam yerinde değil." },
-          { a: "Bu konuda söyleyecek bir şeyim yok. Başka bir şey sorun." }
+          { a: "Bu konuda söyleyecek bir şeyim yok." }
         ]
       },
 
@@ -327,7 +339,7 @@
             { a: "Kovulmak mı? Hayır… Küçük bir anlaşmazlık oldu, o kadar.", gives: ["i_emre_kovulmadi"] },
             { req: ["k_kenan_alibi"], a: "Selim Bey 21:45'te laboratuvara geldi. Bizi bağda görmüş. “Yarın sabah bavulunu topla, kızımdan da uzak dur” dedi. Evet, bu bana bir sebep verir. Ama o saatte Defne'yleydim." }
           ] },
-          { id: "tartisma", a: "Yemekte Kenan Bey ile Selim Bey kuyu yüzünden bağırıştı. Kenan Bey çok sinirli çıktı.", gives: ["i_kenan_tehdit"] },
+          { id: "tartisma", a: "Yemekte Kenan Bey ile Selim Bey kuyu yüzünden bağırıştı. Kenan Bey çok sinirli çıktı.", gives: ["ii_tehdit"] },
           { id: "hesap", ask: "Bağın hesaplarında bir tuhaflık var mıydı?", a: "Hesaplar benim işim değil ama… Geçen ay ihracat faturalarında tutmayan rakamlar gördüm, Selim Bey'e söyledim. Ondan sonra değişti. Çalışma odasına kapanıp eski hesapları incelemeye başladı.", gives: ["i_emre_fatura"] },
           { id: "nasil", a: "Raf devrilmiş, öyle görünüyordu. Ama o raflar duvara vidalıdır; devirmek için güç ister." },
           { id: "katil", ask: "Sizce kim yaptı?", v: [
@@ -367,11 +379,11 @@
         repeat: ["Söylediğim gibi:", "Bunu anlatmıştım:", "Tekrar edeyim:"],
         locked: ["Bunu… şimdi konuşamam.", "Bu konuda bir şey söylemem doğru olmaz."],
         deflect: [
-          { a: "Bunu bilemem. Ama Hülya Hanım elektrik gidince evin her yerine mum dağıttı. Bir şey gördüyse o görmüştür.", until: "i_hulya_merdiven" },
-          { a: "Bilmiyorum… Ama mahzende ne bulduğumu sorarsanız anlatabilirim.", until: "i_emre_koku" },
-          { a: "Benim alanım şarap, dedektif. Ama Murat Bey hakkında söyleyebileceğim bir şey var aslında.", until: "i_emre_fatura" },
-          { a: "Bilmiyorum, kusura bakmayın. Başka bir şey sorun." },
-          { a: "Ben o sırada orada değildim… Yani, bu konuda bir şey diyemem." },
+          { a: "Bunu bilemem. Ama sabah Hülya Hanım mutfakta, gece arka merdivende birini gördüğünü anlatıyordu. Çok korkmuştu.", gives: ["ii_merdiven"], until: "ii_merdiven" },
+          { a: "Bilmiyorum… Ama cesedi bulduğumda mahzende tuhaf bir koku vardı. Çiçeksi, kuru bir koku. Aklımdan çıkmıyor.", gives: ["i_emre_koku"], until: "i_emre_koku" },
+          { a: "Benim alanım şarap. Ama geçen ay ihracat faturalarında tutmayan rakamlar görmüştüm, Selim Bey'e söyledim. Sonrasını bilmiyorum.", gives: ["i_emre_fatura"], until: "i_emre_fatura" },
+          { a: "Bilmiyorum, kusura bakmayın." },
+          { a: "Ben o sırada… Yani, bu konuda bir şey diyemem." },
           { a: "Bu soruya nasıl cevap vereceğimi bilmiyorum." }
         ]
       },
@@ -400,7 +412,7 @@
           { id: "lab", ask: "Laboratuvarda bir şey duydunuz mu?", a: "Emre Bey laboratuvardaymış, öyle diyor. Ama 23'e doğru laboratuvarın tank alarmı yirmi dakika çaldı, kimse kapatmadı. Evde biri olsa koşup kapatırdı.", gives: ["i_hulya_alarm"] },
           { id: "kovulma", ask: "Selim Bey o akşam Emre'yle konuştu mu?", k: ["emre|enolog|kovul|kovdu|bavul", "konus|bagir|kovul|kovdu|kovma|bavul|isten|laboratuvara"], a: "21:45'te Selim Bey laboratuvara gitti. Bağırdığını duydum: “Yarın sabah bavulunu topla!” Emre Bey'e söylüyordu. Neden, bilmiyorum.", gives: ["i_hulya_emre"] },
           { id: "hesap", ask: "Selim Bey ile Murat Bey neden tartıştı?", k: ["hesap|para|zimmet|denetci|denetim|muhasebe|milyon|kasa|murat|avukat|calisma oda", "hesap|para|zimmet|denetci|denetim|muhasebe|milyon|kasa|tartis|kavga|bagir|konus|calisma oda"], a: "21:30'da çalışma odasına kahve götürdüm. Selim Bey bağırıyordu: “Yarın Ankara'dan denetçi geliyor Murat, her kuruşa bakacak!” Murat Bey bembeyaz olmuştu. Kahveyi bırakıp çıktım.", gives: ["i_hulya_denetci"] },
-          { id: "tartisma", ask: "Akşam yemeğinde ne oldu?", a: "Yemek kötü bitti. Kenan Bey ile Selim Bey kuyu yüzünden kavga ettiler. Kenan Bey 21:15'te “Bu bağ seni de gömecek!” deyip kapıyı çarptı. Sonra da çalışma odasında Selim Bey ile Murat Bey bağırıştı.", gives: ["i_kenan_tehdit"] },
+          { id: "tartisma", ask: "Akşam yemeğinde ne oldu?", a: "Yemek kötü bitti. Kenan Bey ile Selim Bey kuyu yüzünden kavga ettiler. Kenan Bey 21:15'te “Bu bağ seni de gömecek!” deyip kapıyı çarptı. Sonra da çalışma odasında Selim Bey ile Murat Bey bağırıştı.", gives: ["ii_tehdit"] },
           { id: "baris", ask: "Oğlunuza ne oldu?", v: [
             { a: "Barış'ım… İki yıl önce Selim Bey onu kasadan para çalmakla suçlayıp kovdu. Oğlum yapmadı, yemin ederim. Kırıldım ama gitmedim; bu ev benim de evim.", gives: ["i_hulya_baris"] },
             { req: ["k_ajanda"], a: "“Barış değilmiş” mi yazmış? (Gözleri dolar.) Selim Bey biliyormuş… özür dileyecekmiş. Demek parayı alan başkasıymış. O zaman da hesaplara Murat Bey bakıyordu, dosyayı o hazırlamıştı.", gives: ["i_hulya_baris", "i_murat_baris"] }
@@ -430,7 +442,7 @@
           emre: { a: "Emre Bey iyi çocuktur. Laboratuvardaymış, öyle diyor. Ama 23'e doğru o tank alarmı yirmi dakika çaldı, kimse kapatmadı. Bir de o akşam Selim Bey'le aralarında bir şey oldu…", gives: ["i_hulya_alarm"] },
           murat: { a: "Murat Bey ailenin avukatı, Selim Bey'in okul arkadaşı. 21:30'da çalışma odasına kahve götürdüm. Selim Bey ona bağırıyordu: “Yarın denetçi geliyor, her kuruşa bakacak!” Murat Bey'in rengi atmıştı.", gives: ["i_hulya_denetci"] },
           kenan: { v: [
-            { a: "Kenan Bey kardeşiyle kuyu yüzünden kavgalıydı. O akşam “Bu bağ seni de gömecek” dedi kapıdan çıkarken. Sonra merdivende gördüm onu, eminim.", gives: ["i_kenan_tehdit", "i_hulya_merdiven"] },
+            { a: "Kenan Bey kardeşiyle kuyu yüzünden kavgalıydı. O akşam “Bu bağ seni de gömecek” dedi kapıdan çıkarken. Sonra merdivende gördüm onu, eminim.", gives: ["ii_tehdit", "i_hulya_merdiven"] },
             { req: ["k_kenan_alibi"], a: "Kenan Bey'e haksızlık etmişim, Allah affetsin. Merdivendeki o değilmiş." }
           ] }
         },
@@ -450,12 +462,12 @@
         repeat: ["Söyledim ya evladım:", "Yaşlandım ama unutmadım:", "Tekrar edeyim:"],
         locked: ["Ben kimsenin işine karışmam evladım.", "Bunu bilmem."],
         deflect: [
-          { a: "Onu bilmem evladım. Ama elektrik gidince her odaya mum götürdüm; o sırada gördüklerimi sorun.", until: "i_hulya_merdiven" },
-          { a: "Ben kâhyayım, kimsenin işine karışmam. Ama Murat Bey ile Selim Bey o akşam çalışma odasında çok bağırıştı.", until: "i_hulya_denetci" },
-          { a: "Bilmiyorum. Ama Defne Hanım o gece pek odasında durmadı gibi geldi bana.", until: "i_hulya_defne_oda" },
-          { a: "Ah, aklım karıştı. Emre Bey'in laboratuvarından gelen o alarm sesi hâlâ kulağımda.", until: "i_hulya_alarm" },
+          { a: "Onu bilmem evladım. Ama elektrik gidince arka merdivende biri yanımdan koşarak geçti. Kenan Bey'di, eminim. Mum söndü, yüzünü göremedim ama o iri cüssesi…", gives: ["i_hulya_merdiven"], until: "i_hulya_merdiven" },
+          { a: "Ben kimsenin işine karışmam. Ama 21:30'da kahve götürdüğümde Selim Bey, Murat Bey'e “Yarın denetçi geliyor, her kuruşa bakacak!” diye bağırıyordu.", gives: ["i_hulya_denetci"], until: "i_hulya_denetci" },
+          { a: "Bilmiyorum. Yalnız Defne Hanım'a 22:45'te ıhlamur götürdüm; oda boştu. Yatak bozulmamıştı bile.", gives: ["i_hulya_defne_oda"], until: "i_hulya_defne_oda" },
+          { a: "Ah, aklım karıştı. O gece laboratuvarın tank alarmı yirmi dakika çaldı, kimse kapatmadı. Sesi hâlâ kulağımda.", gives: ["i_hulya_alarm"], until: "i_hulya_alarm" },
           { a: "Merdivendeki Kenan Bey'di, eminim. Biri bana aksini gösterirse o başka.", until: "k_kenan_alibi" },
-          { a: "Çayınız soğuyor evladım. Başka bir şey sorun." },
+          { a: "Çayınız soğuyor evladım. Bunu bilmem." },
           { a: "Ah, kafam karıştı. Ne sordunuz?" }
         ]
       },
@@ -493,7 +505,7 @@
           ] },
           { id: "koku", a: "Lavanta, evet. Otuz yıldır aynı kolonya. Bu artık bir suç mu?", gives: ["i_murat_lavanta"] },
           { id: "baris", ask: "Barış neden kovuldu?", a: "Barış meselesi mi? Kasada açık tespit edildi ve çocuk işten çıkarıldı. Dosyayı ben hazırladım. Kapanmış bir konu.", gives: ["i_murat_baris"] },
-          { id: "tartisma", ask: "Akşam yemeğinde ne oldu?", a: "Akşam yemeğinde Kenan Bey ile Selim arasında çirkin bir tartışma oldu. Kenan Bey tehditler savurdu. Ben olsam oradan başlardım.", gives: ["i_kenan_tehdit"] },
+          { id: "tartisma", ask: "Akşam yemeğinde ne oldu?", a: "Akşam yemeğinde Kenan Bey ile Selim arasında çirkin bir tartışma oldu. Kenan Bey tehditler savurdu. Ben olsam oradan başlardım.", gives: ["ii_tehdit"] },
           { id: "katil", ask: "Sizce kim yaptı?", v: [
             { a: "Profesyonel görüşümü sorarsanız: Kızı aynı akşam mirastan çıkarıldı, kardeşi aynı akşam onu tehdit etti. Ben olsam oradan başlardım." },
             { any: ["c_murat_sise", "c_murat_dugme"], a: "Kırk yıllık dostluk… (Gözlüğünü çıkarıp siler.) Bundan sonra avukatım olmadan tek kelime etmeyeceğim." }
@@ -503,13 +515,13 @@
             { any: ["c_murat_oda", "c_murat_dugme", "c_murat_sise", "c_murat_hesap"], a: "Bir yanlış hatırlama yalan değildir. Bunu hangi hâkim olsa size söyler." }
           ] },
           { id: "ceset", a: "Bağırışları duyunca aşağı indim. Korkunç bir manzaraydı. Hemen jandarmayı aradım; biri soğukkanlı olmalıydı." },
-          { id: "borc", a: "Defne Hanım'ın galerisi batmak üzere, borçları ciddi. Babası bu akşam onu mirastan çıkardı. Hesap ortada.", gives: ["i_defne_borc"] }
+          { id: "borc", a: "Defne Hanım'ın galerisi batmak üzere, borçları ciddi. Babası bu akşam onu mirastan çıkardı. Hesap ortada.", gives: ["ii_defne_borc"] }
         ],
         about: {
           selim: "Selim zor bir adamdı. Kibirli, şüpheci. Son zamanlarda herkesten şüpheleniyordu, benden bile. Ama dosttuk.",
-          defne: { a: "Defne Hanım'ın galerisi batmak üzere, borçları ciddi. Babası bu akşam onu mirastan çıkardı. Hesap ortada.", gives: ["i_defne_borc"] },
-          kenan: { a: "Kenan Bey “Bu bağ seni de gömecek” dedi, hepimiz duyduk. Mahkemede güzel bir cümle olur.", gives: ["i_kenan_tehdit"] },
-          emre: "Enolog mu? Taşralı bir çocuk. Defne Hanım'a fazla yakın, bence. Selim bunu öğrenseydi…",
+          defne: { a: "Defne Hanım'ın galerisi batmak üzere, borçları ciddi. Babası bu akşam onu mirastan çıkardı. Hesap ortada.", gives: ["ii_defne_borc"] },
+          kenan: { a: "Kenan Bey “Bu bağ seni de gömecek” dedi, hepimiz duyduk. Mahkemede güzel bir cümle olur.", gives: ["ii_tehdit"] },
+          emre: { a: "Enolog mu? Taşralı bir çocuk. Defne Hanım'a fazla yakın, bence. Selim bunu öğrenseydi…", gives: ["ii_iliski"] },
           hulya: "Hülya Hanım sadık bir çalışandır. Gerçi oğlu meselesinden sonra Selim'e küs olduğunu da biliyorum."
         },
         show: {
@@ -539,9 +551,9 @@
         repeat: ["Daha önce de söylediğim gibi:", "Tekrar ediyorum:", "Kayıtlara geçsin:"],
         locked: ["Bu konuda yorum yapmayacağım.", "Müvekkil gizliliği, dedektif."],
         deflect: [
-          { a: "Bu soruyu Kenan Bey'e sorsanız daha verimli olur. Tehdit eden oydu, ben değil.", until: "i_kenan_tehdit" },
-          { a: "Müvekkil gizliliği, dedektif. Ama Defne Hanım'ın mali durumunu araştırmanızı tavsiye ederim.", until: "i_defne_borc" },
-          { a: "Enolog çocuğa o gece nerede olduğunu sordunuz mu? Bence sorun.", until: "i_emre_lab" },
+          { a: "Bu soruyu yanlış kişiye soruyorsunuz. Kenan Bey yemekte Selim'i herkesin önünde tehdit etti: “Bu bağ seni de gömecek.”", gives: ["ii_tehdit"], until: "ii_tehdit" },
+          { a: "Müvekkil gizliliği, dedektif. Ama şu kadarını söyleyeyim: Defne Hanım'ın galerisi batmak üzere, borçları ciddi.", gives: ["ii_defne_borc"], until: "ii_defne_borc" },
+          { a: "Bilmiyorum. Ama o enolog çocuk Defne Hanım'a fazla yakın, gözümden kaçmadı.", gives: ["ii_iliski"], until: "ii_iliski" },
           { a: "Hukuken bunun bir önemi yok." },
           { a: "Sorularınızın bir yöntemi var mı, dedektif? Yoksa karanlıkta mı ateş ediyorsunuz?" },
           { a: "Bu konuda yorum yapmayacağım." }
@@ -578,7 +590,7 @@
           { id: "sise", a: "1987 magnum… Babamızın öldüğü yıl. Selim onu Defne'nin düğünü için saklıyordu." },
           { id: "nasil", a: "Raf devrildi diyorlar. Selim o raflara çocukken tırmanırdı. Hiçbiri yıkılmadı." },
           { id: "ceset", a: "Ben orada değildim. Sabah haber geldi… Kimse beni aramadı bile." },
-          { id: "baris", a: "Barış iyi çocuktu. Hırsız falan değildi. O dosya kokuyordu ama Selim dinlemedi." },
+          { id: "baris", a: "Barış iyi çocuktu. Hırsız falan değildi. O dosya kokuyordu ama Selim dinlemedi.", gives: ["ii_baris"] },
           { id: "katil", ask: "Sizce kim öldürdü?", v: [
             { a: "Ben değilim. Bu evde bir yılan var, o kadarını söylerim. Ağabeyim de biliyordu." },
             { req: ["i_kenan_fener"], a: "O fenerle kaçan her kimse, o. Bulun onu." }
@@ -599,7 +611,7 @@
             { a: "Defne'm… Akıllı kızdır ama babası gibi inatçı. O gece… Neyse. Bilmiyorum." },
             { req: ["k_kenan_alibi"], a: "Demek beni iskelede gördüler. Ben de onları görmüştüm aslında, ama söylemedim. Kızın sırrı benim de sırrım." }
           ] },
-          emre: "Enolog çocuk. İşini bilir. Defne'ye bakışından ne olduğunu ben anlıyorum.",
+          emre: { a: "Enolog çocuk. İşini bilir. Defne'ye bakışından ne olduğunu ben anlıyorum.", gives: ["ii_iliski"] },
           hulya: "Hülya dürüst kadındır. Oğluna yapılan haksızlığa rağmen o evden ayrılmadı."
         },
         show: {
@@ -620,16 +632,195 @@
         repeat: ["Söyledim ya!", "Kaç kere soracaksınız?", "Yine mi? Peki:"],
         locked: ["Bunu konuşmayacağım.", "O beni ilgilendirir."],
         deflect: [
-          { a: "Bunu bana değil Murat'a sorun. Ağabeyim ona çok kızgındı.", until: "i_kenan_murat" },
-          { a: "Hülya'ya sorun. O evde olan hiçbir şey onun gözünden kaçmaz.", until: "i_hulya_merdiven" },
+          { a: "Bunu bilmem. Ama ağabeyim geçen hafta kahvede bana “Murat'a hesap sordum, kıvırıyor” dedi.", gives: ["i_kenan_murat"], until: "i_kenan_murat" },
+          { a: "Ben ne bileyim! Hülya'nın oğlu Barış'ı hırsız diye kovdular, o çocuk hırsız değildi. O dosya kokuyordu, onu bilirim.", gives: ["ii_baris"], until: "ii_baris" },
           { a: "Benim bildiğim kuyu, toprak, üzüm. Gerisi sizin işiniz." },
           { a: "Bilmem. Ben o evde ancak yemek boyunca vardım." },
-          { a: "Lafı dolandırmayın. Ne soracaksanız açık açık sorun." }
+          { a: "Lafı dolandırmayın. Derdiniz neyse açık açık söyleyin." }
         ]
       }
     }
   };
 
+
+  /* ======================= GÖRSELLER ======================= */
+
+  /* Portre özellikleri (js/portrait.js çizer) */
+  CASE.looks = {
+    defne: { skin: "#e9c2a6", hair: "#5a2a1e", style: "uzun", clothes: "#7d2b33", bg: "#3a2326", earrings: true, lips: "#b4505a" },
+    emre: { skin: "#d9a982", hair: "#2a1d16", style: "kivircik", clothes: "#3f6b55", bg: "#1f2c26", stubble: true },
+    hulya: { skin: "#d8a888", hair: "#b9b3ab", style: "topuz", clothes: "#a07a33", bg: "#33291a", lines: true },
+    murat: { skin: "#e3bfa3", hair: "#c9c4bd", style: "yana", clothes: "#2f2a3d", bg: "#26213a", glasses: true, tie: "#6b4c9a", lines: true },
+    kenan: { skin: "#c98f6c", hair: "#8d8780", style: "kel", clothes: "#3c5577", bg: "#1d2635", mustache: true, lines: true }
+  };
+
+  /* Tam otopsi raporu (Belgeler > Adli Tıp Raporu) */
+  CASE.autopsy = {
+    no: "ATK-2026/0914",
+    date: "15 Eylül 2026, 08:30",
+    doctor: "Dr. Nermin Aksoy, Adli Tıp Uzmanı",
+    subject: [
+      ["Ad Soyad", "Selim Karahan"],
+      ["Yaş / Cinsiyet", "63 / Erkek"],
+      ["Boy / Kilo", "1,78 m / 84 kg"],
+      ["Bulunduğu yer", "Ayazma Bağevi mahzeni, jeneratör ile 1987 rafı arası"],
+      ["Bulunma", "14 Eylül, 23:40 (Emre Aslan)"]
+    ],
+    sections: [
+      ["Ölüm zamanı", "23:00 – 23:20. Vücut ısısı ve ölü katılığının başlangıcı bu aralığı gösteriyor. Kurbanın sol bileğindeki kol saati düşme anında kırılmış ve 23:12'de durmuş."],
+      ["Ölüm nedeni", "Başın arka kısmına (oksipital bölge) inen tek ve ağır darbeye bağlı kafatası çökme kırığı ve beyin kanaması."],
+      ["Yara", "6 cm uzunluğunda, yay biçiminde yarık. İçinden koyu yeşil cam parçaları çıkarıldı; olay yerindeki 1987 magnum şişeyle uyumlu. Darbe arkadan ve yukarıdan aşağı vurulmuş; saldırgan kurbandan kısa değil."],
+      ["Savunma izi", "YOK. Ellerde, kollarda ve tırnak altlarında boğuşma bulgusu yok. Kurban saldırganı görmemiş ya da ona arkasını dönecek kadar güvenmiş."],
+      ["Raf altındaki ezilmeler", "Sırt ve sağ omuzdaki ezilmelerde hayati reaksiyon (kanama, şişlik) yok. Raf ölümden SONRA devrilmiş; olaya kaza süsü verilmiş."],
+      ["Kan tahlili", "Kanda 0,4 promil alkol (akşam yemeğindeki şarapla uyumlu). İlaç veya zehir bulgusu yok."],
+      ["Kıyafet", "Ceketin yakasında ve sağ omzunda çiçeksi bir esans izi. Kurbanın kendi kolonyasıyla (sedir) uyuşmuyor. Tür tayini için laboratuvara gönderildi."]
+    ],
+    conclusion: "Ölüm doğal yolla ya da kaza sonucu gerçekleşmemiştir. Olay CİNAYET olarak soruşturulmalıdır.",
+    marks: [
+      { n: 1, view: "arka", x: 50, y: 14, kind: "olumcul", label: "Ölümcül darbe: başın arkası, cam parçalı yarık" },
+      { n: 2, view: "arka", x: 62, y: 62, kind: "ps", label: "Ölüm sonrası ezilmeler: sırt ve sağ omuz (raf)" },
+      { n: 3, view: "arka", x: 55, y: 38, kind: "iz", label: "Çiçeksi esans izi: ceket yakası ve omuz" },
+      { n: 4, view: "on", x: 81, y: 114, kind: "not", label: "Kırık kol saati: sol bilek, 23:12'de durmuş" },
+      { n: 5, view: "on", x: 18, y: 121, kind: "yok", label: "Ellerde/kollarda savunma izi yok" }
+    ]
+  };
+
+  CASE.documents = [
+    { id: "otopsi", kind: "otopsi", title: "Adli Tıp Ön Raporu", sub: "Ölüm nedeni, yaralar ve vücut şeması" },
+    { id: "kroki", kind: "svg", title: "Olay Yeri Krokisi", sub: "Bağevi, mahzen, iskele ve laboratuvar",
+      notes: ["Mahzene hem evin arka merdiveninden hem de dışarıdaki mahzen kapısından inilir.", "Bekçi kulübesinden mahzen kapısı görülebilir (yaklaşık 90 m).", "Yatak odaları üst kattadır; üst kata arka merdivenle de çıkılır."],
+      svg: '<svg viewBox="0 0 640 420" xmlns="http://www.w3.org/2000/svg" font-family="Inter, Arial, sans-serif" font-size="11" fill="#2a221b">' +
+        '<rect x="0" y="0" width="92" height="420" fill="#cddfe4"/>' +
+        '<path d="M15 60 q10 -6 20 0 t20 0 M15 140 q10 -6 20 0 t20 0 M15 330 q10 -6 20 0 t20 0 M15 390 q10 -6 20 0 t20 0" stroke="#8fb2bd" fill="none"/>' +
+        '<text x="46" y="200" transform="rotate(-90 46 200)" text-anchor="middle" font-size="12" letter-spacing="4" fill="#5d8590">EGE DENİZİ</text>' +
+        '<rect x="88" y="262" width="80" height="14" fill="#b08a5a" stroke="#6d5236"/>' +
+        '<path d="M98 262v14M108 262v14M118 262v14M128 262v14M138 262v14M148 262v14M158 262v14" stroke="#6d5236" stroke-width=".6"/><text x="100" y="294">İskele</text>' +
+        '<rect x="176" y="232" width="30" height="24" fill="#e6d6b8" stroke="#2a221b"/><text x="150" y="224">Bekçi kulübesi</text>' +
+        '<path d="M168 270 C 200 300, 240 300, 270 290" stroke="#9c8d78" stroke-dasharray="2 4" fill="none"/>' +
+        '<rect x="262" y="70" width="230" height="170" fill="#f6efe0" stroke="#2a221b" stroke-width="2.5"/><text x="262" y="62" font-weight="700" font-size="12">AYAZMA BAĞEVİ (zemin kat)' +
+        '</text><path d="M372 70v170M262 160h230M432 160v80" stroke="#2a221b" stroke-width="1.5"/><text x="280" y="118">Yemek salonu</text><text x="405" y="118">Mutfak</text>' +
+        '<text x="272" y="203">Çalışma odası</text><text x="390" y="203">Hol</text><text x="437" y="174" font-size="9" font-weight="600">Arka merdiven</text>' +
+        '<text x="437" y="185" font-size="9">↑ yatak odaları</text><path d="M438 194h48M438 202h48M438 210h48M438 218h48M438 226h48M438 234h48" stroke="#2a221b" stroke-width=".7"/>' +
+        '<rect x="452" y="241" width="22" height="12" fill="#2a221b"/><text x="480" y="252" font-size="10" font-weight="600">Mahzen kapısı</text>' +
+        '<path d="M206 246 L 452 248" stroke="#a8323f" stroke-dasharray="6 5" stroke-width="1.6"/>' +
+        '<text x="270" y="266" fill="#a8323f" font-size="10.5">görüş hattı: kulübeden mahzen kapısına ≈ 90 m</text>' +
+        '<rect x="300" y="290" width="230" height="100" fill="#ece3d1" stroke="#2a221b" stroke-width="1.5" stroke-dasharray="7 4"/><text x="306" y="306" font-weight="700">MAHZEN (yer altı)' +
+        '</text><path d="M463 253 L 470 290" stroke="#2a221b" stroke-dasharray="3 3"/><text x="476" y="282" font-size="9">merdiven</text>' +
+        '<path d="M320 322h80M320 342h80M320 362h80M420 322h50" stroke="#6d5a45" stroke-width="5"/><text x="320" y="382" font-size="10">şarap rafları</text>' +
+        '<rect x="488" y="330" width="34" height="26" fill="#9aa1a6" stroke="#2a221b"/><text x="478" y="372" font-size="10">Jeneratör</text>' +
+        '<path d="M432 342l16 16M448 342l-16 16" stroke="#a8323f" stroke-width="3"/><text x="418" y="378" fill="#a8323f" font-weight="700" font-size="10">CESET</text>' +
+        '<circle cx="458" cy="336" r="4" fill="#2e5b3a"/><text x="464" y="332" font-size="9" fill="#2e5b3a">şişe</text>' +
+        '<rect x="540" y="80" width="90" height="70" fill="#f6efe0" stroke="#2a221b" stroke-width="2"/><circle cx="566" cy="112" r="9" fill="none" stroke="#2a221b"/>' +
+        '<circle cx="594" cy="112" r="9" fill="none" stroke="#2a221b"/><text x="543" y="74" font-size="10" font-weight="700">LABORATUVAR</text><text x="560" y="140" font-size="9">tanklar' +
+        '</text><path d="M110 406h510M110 414h510" stroke="#7b8f4f" stroke-width="2" stroke-dasharray="3 6"/><text x="112" y="400" font-size="10" fill="#4f5f2d">Ayazma bağları</text>' +
+        '<path d="M572 190 L 572 420" stroke="#4f5f2d" stroke-dasharray="10 4" stroke-width="1.4"/><circle cx="572" cy="190" r="8" fill="#cddfe4" stroke="#2a221b"/>' +
+        '<text x="584" y="194" font-size="10">Kuyu</text><text x="582" y="230" font-size="10">sınır</text><text x="582" y="300" font-size="10">Kenan\'ın</text>' +
+        '<text x="582" y="312" font-size="10">bağı →</text><g transform="translate(612 30)"><path d="M0 -16 L6 6 L0 2 L-6 6 Z" fill="#2a221b"/><text x="-4" y="20" font-weight="700">K</text>' +
+        '</g></svg>' },
+    { id: "sise", kind: "svg", title: "Delil No. 1: Kırık magnum şişe", sub: "Mahzen, rafın dibi",
+      notes: ["1987 Ayazma, 1,5 litrelik magnum. Selim bu şişeyi kızı Defne'nin düğününde açmak için saklıyordu.", "Tabanında kan ve saç teli. Ağzı darbeden sonra yere çarpıp kırılmış.", "Şişenin üzerinde parmak izi yok: silinmiş ya da eldivenle tutulmuş."],
+      svg: '<svg viewBox="0 0 360 200" xmlns="http://www.w3.org/2000/svg" font-family="Inter, Arial, sans-serif" font-size="11" fill="#2a221b">' +
+        '<ellipse cx="170" cy="160" rx="140" ry="12" fill="#00000018"/>' +
+        '<path d="M40 70 Q40 48 64 48 L230 48 Q250 48 262 60 L272 72 L280 64 L276 82 L288 86 L276 96 L284 110 L268 106 L262 124 Q250 136 230 136 L64 136 Q40 136 40 112 Z" fill="#23402c" stroke="#13251a" stroke-width="2"/>' +
+        '<path d="M60 58 L220 58" stroke="#5f8a6c" stroke-width="5" stroke-linecap="round" opacity=".6"/>' +
+        '<rect x="100" y="66" width="104" height="54" rx="3" fill="#efe6d2" stroke="#8a7a5d"/>' +
+        '<text x="152" y="86" text-anchor="middle" font-family="Playfair Display, Georgia, serif" font-weight="700" font-size="13">AYAZMA</text>' +
+        '<text x="152" y="102" text-anchor="middle" font-size="10">MAGNUM · 1,5 L</text>' +
+        '<text x="152" y="115" text-anchor="middle" font-family="Playfair Display, Georgia, serif" font-weight="700" font-size="12" fill="#a8323f">1987</text>' +
+        '<path d="M44 96 q4 10 0 22" stroke="#6b0f1a" stroke-width="6" stroke-linecap="round" opacity=".85"/>' +
+        '<path d="M300 70 l14 6 l-6 10 z M306 112 l16 -2 l-4 12 z M292 140 l10 2 l-6 8 z" fill="#2e5b3a" stroke="#13251a"/>' +
+        '<path d="M40 180h100" stroke="#2a221b" stroke-width="2"/><path d="M40 175v10M90 175v10M140 175v10" stroke="#2a221b"/>' +
+        '<text x="68" y="196" font-size="10">0 — 10 — 20 cm</text>' +
+        '<text x="28" y="40" font-size="10" fill="#6b0f1a">kan + saç teli (taban)</text>' +
+        '<text x="250" y="40" font-size="10">kırık ağız</text>' +
+        '</svg>' },
+    { id: "dugme", kind: "svg", title: "Delil No. 2: Gümüş kol düğmesi", sub: "Mahzen merdiveninin dibi", unlock: "k_dugme",
+      notes: ["Hülya sabah mahzen merdiveninin dibinde bulup cebine koymuş.", "Gümüş, oval; üzerinde el oyması “M.Ö.” harfleri.", "Kopça kısmı zorlanarak açılmış gibi: bir yere takılıp kopmuş olabilir."],
+      svg: '<svg viewBox="0 0 360 200" xmlns="http://www.w3.org/2000/svg" font-family="Inter, Arial, sans-serif" font-size="11" fill="#2a221b">' +
+        '<defs><radialGradient id="silver" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#ffffff"/><stop offset=".45" stop-color="#cfd3d6"/><stop offset="1" stop-color="#7d858c"/></radialGradient></defs>' +
+        '<ellipse cx="180" cy="168" rx="80" ry="8" fill="#00000018"/>' +
+        '<rect x="172" y="100" width="16" height="50" rx="4" fill="url(#silver)" stroke="#5f666d"/>' +
+        '<rect x="140" y="144" width="80" height="14" rx="7" fill="url(#silver)" stroke="#5f666d" transform="rotate(-8 180 151)"/>' +
+        '<ellipse cx="180" cy="80" rx="62" ry="48" fill="url(#silver)" stroke="#5f666d" stroke-width="2"/>' +
+        '<ellipse cx="180" cy="80" rx="52" ry="38" fill="none" stroke="#8b9298" stroke-width="1.5"/>' +
+        '<text x="180" y="92" text-anchor="middle" font-family="Playfair Display, Georgia, serif" font-style="italic" font-weight="700" font-size="34" fill="#5f666d">M.Ö.</text>' +
+        '<path d="M300 40h40" stroke="#2a221b" stroke-width="2"/><text x="300" y="56" font-size="10">2 cm</text>' +
+        '</svg>' },
+    { id: "ajanda", kind: "not", title: "Selim'in ajandası: 14 Eylül", sub: "Çalışma odasından (Defne getirdi)", unlock: "k_ajanda",
+      head: "14 EYLÜL · PAZARTESİ",
+      lines: [
+        { t: "09:00 Hasat, 3. parsel. Emre'yle tanklara bak." },
+        { t: "Emre'nin faturaları: kur farkı DEĞİL. Hamburg ve Rotterdam ödemeleri başka hesaba gitmiş." },
+        { t: "Kasadaki açık Barış değilmiş.", u: true },
+        { t: "M. — 4,2 milyon.", big: true, u: true },
+        { t: "Yarın denetçi (Ankara, 10:00)." },
+        { t: "Affetmeyeceğim.", red: true },
+        { t: "Barış'tan özür dilemeliyim. Hülya'ya ne diyeceğim?" },
+        { t: "Vasiyet: vakıf. Defne'ye bu akşam söyle.", s: true }
+      ] }
+  ];
+
+  /* ======================= YAZDIRILABİLİR SET ======================= */
+  CASE.print = {
+    rules: [
+      "Bu dosya bir dedektiflik oyunudur. Yalnız ya da arkadaşlarınızla oynayabilirsiniz.",
+      "ZARF A ile başlayın. Belgeleri inceleyin, sorgu tutanaklarını okuyun, not alın.",
+      "Her zarfın sonunda bir GEÇİŞ SORUSU var. Cevabınızdan eminseniz bir sonraki zarfı açın. Cevapları en sondaki ters çevrilmiş kontrol sayfasından kontrol edebilirsiniz.",
+      "Şüphelilere yalnızca dosyadaki sorular soruldu. Herkes bir şey saklıyor ama herkesin sırrı cinayet değil.",
+      "Hazır olduğunuzda SUÇLAMA FORMUNU doldurun: katil, sebep ve en güçlü üç kanıt. ÇÖZÜM sayfasını ancak ondan sonra açın."
+    ],
+    envelopes: [
+      {
+        id: "A", title: "Olay gecesi", note: "Buradan başlayın.",
+        docs: ["otopsi", "kroki", "sise"],
+        interviews: [
+          { cid: "defne", items: [{ t: "kim" }, { t: "nerede", v: 0 }, { t: "tartisma" }, { t: "vasiyet" }, { t: "borc", q: "Maddi durumunuz nasıl?" }, { t: "hakkinda_murat", q: "Murat Bey nasıl biridir?" }, { t: "nasil" }, { t: "katil", v: 0 }] },
+          { cid: "emre", items: [{ t: "kim" }, { t: "nerede", v: 0 }, { t: "ceset" }, { t: "lab", v: 0 }, { t: "sise" }, { t: "kovulma", v: 0 }, { t: "hakkinda_murat", q: "Murat Bey hakkında ne düşünüyorsunuz?" }, { t: "katil", v: 0 }] },
+          { cid: "hulya", items: [{ t: "kim" }, { t: "nerede" }, { t: "oda" }, { t: "elektrik" }, { t: "merdiven", v: 0 }, { t: "lab" }, { t: "kovulma" }, { t: "hesap" }, { t: "baris", v: 0 }, { t: "katil", v: 0 }] },
+          { cid: "murat", items: [{ t: "kim" }, { t: "nerede", v: 0 }, { t: "vasiyet" }, { t: "hesap", v: 0 }, { t: "nasil", v: 0 }, { t: "koku", q: "Hangi kolonyayı kullanıyorsunuz?" }, { t: "baris" }, { t: "katil", v: 0 }] },
+          { cid: "kenan", items: [{ t: "kim" }, { t: "nerede", v: 0 }, { t: "tartisma" }, { t: "arazi" }, { t: "hesap" }, { t: "hakkinda_murat", q: "Murat Bey'i tanır mısınız?" }, { t: "katil", v: 0 }] }
+        ],
+        gate: { q: "En az iki şüpheli o gece nerede olduğu konusunda yalan söylüyor. Kimler ve nereden anladınız?", a: "Defne (Hülya 22:45'te odasını boş buldu) ve Emre (laboratuvardaki alarm yirmi dakika çaldı, kimse kapatmadı). Murat da yalan söylüyor olabilir: 23:10'da kapısını çalan Hülya'ya cevap vermedi." }
+      },
+      {
+        id: "B", title: "Saklananlar", note: "Geçiş sorusunu cevapladıktan sonra açın.",
+        docs: ["dugme"],
+        interviews: [
+          { cid: "defne", items: [{ show: "c_defne", q: "Hülya Hanım 22:45'te odanızı boş bulmuş." }, { t: "birlikte", v: 1, q: "Kiminleydiniz?" }] },
+          { cid: "emre", items: [{ show: "c_emre", q: "Laboratuvarın alarmı yirmi dakika çalmış ve kimse kapatmamış." }, { show: "i_defne_iskele", q: "Defne Hanım o gece iskelede olduğunu ve yalnız olmadığını söyledi." }, { t: "kovulma", v: 1 }] },
+          { cid: "kenan", items: [{ show: "k_kenan_alibi", q: "Sizi 22:55 ile 23:25 arasında iskelede görmüşler." }, { t: "tartisma" }] },
+          { cid: "hulya", items: [{ show: "k_kenan_alibi", q: "Kenan Bey 23:15'te iskeledeymiş. İki tanık var." }, { t: "dugme", v: 0, q: "Bu düğmeyi yemekte düşürmüş olabilir mi?" }] },
+          { cid: "defne", items: [{ show: "k_dugme", q: "Bu kol düğmesini tanıyor musunuz?" }] }
+        ],
+        gate: { q: "Hülya'nın merdivende gördüğü kişi Kenan değilse kimdi? Hangi iki ipucu bu kişiyi gösteriyor?", a: "Murat Öztürk: Merdivendeki kişi lavanta kokuyordu (Murat'ın kolonyası) ve mahzen merdiveninde “M.Ö.” kol düğmesi bulundu." }
+      },
+      {
+        id: "C", title: "Avukat", note: "Son zarf. Okuduktan sonra suçlama formunu doldurun.",
+        docs: ["ajanda"],
+        interviews: [
+          { cid: "defne", items: [{ t: "hesap", v: 1, q: "Babanızın hesaplarıyla ilgili bildiğiniz başka bir şey var mı?" }] },
+          { cid: "murat", items: [{ show: "k_dugme", v: 0, q: "Bu kol düğmesi sizin mi?" }, { t: "dugme", v: 1, q: "Düğme mahzen merdiveninde bulundu." }, { t: "nerede", v: 1, q: "23:10'da Hülya Hanım kapınızı çalmış, cevap vermemişsiniz." }, { t: "nasil", v: 1, q: "Selim Bey sizce nasıl öldü?" }, { t: "hesap", v: 1, q: "Ajandada “M. — 4,2 milyon” yazıyor." }, { t: "katil", v: 1 }] },
+          { cid: "hulya", items: [{ t: "baris", v: 1, q: "Selim Bey ajandasına “Barış değilmiş” yazmış." }] },
+          { cid: "kenan", items: [{ show: "k_ajanda", q: "Ağabeyinizin ajandası." }] }
+        ],
+        gate: null
+      }
+    ],
+    timeline: [
+      ["20:00", "Hasat yemeği. Selim ile Kenan kuyu yüzünden kavga eder."],
+      ["21:15", "Kenan “Bu bağ seni de gömecek” diyerek çıkar."],
+      ["21:30", "Selim, Murat'a ertesi gün denetçi geleceğini söyler."],
+      ["21:45", "Selim, Defne ile Emre'yi bağda görmüştür; Emre'yi kovar."],
+      ["22:00", "Selim, Defne'ye bağı vakfa bırakacağını söyler."],
+      ["22:30", "Defne ve Emre gizlice iskelede buluşur."],
+      ["22:55", "Kenan özür dilemek için döner; bekçi kulübesinde bekler."],
+      ["23:05", "Elektrik kesilir. Selim jeneratör için mahzene iner."],
+      ["23:10", "Murat peşinden iner, magnum şişeyle vurur, rafı devirir. Kol saati 23:12'de durur."],
+      ["23:15", "Murat arka merdivenden kaçar; düğmesini düşürür. Hülya karanlıkta onu Kenan sanar; Kenan feneri görür."],
+      ["23:40", "Emre cesedi bulur."]
+    ]
+  };
+
   if (typeof module !== "undefined" && module.exports) module.exports = CASE;
-  else root.CASE = CASE;
+  else (root.CASES = root.CASES || []).push(CASE);
 })(this);

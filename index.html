@@ -3,61 +3,77 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Son Hasat · Dedektif Oyunu</title>
+  <title>Sorgu Odası · Dedektif Oyunu</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <header class="top">
-    <div class="brand">
-      <span class="brand-title" id="caseTitle">Son Hasat</span>
-      <span class="brand-sub" id="casePlace"></span>
-    </div>
-    <nav class="top-actions">
-      <button class="btn ghost" id="btnCase" type="button">Vaka dosyası</button>
-      <button class="btn accent" id="btnAccuse" type="button">Suçla</button>
-      <button class="btn ghost" id="btnReset" type="button" title="Baştan başla">↺</button>
+  <!-- ANA EKRAN: vaka seçimi -->
+  <div class="home" id="home" hidden>
+    <header class="home-head">
+      <div class="home-kicker">Yapay zekâsız dedektiflik oyunu</div>
+      <h1>Sorgu Odası</h1>
+      <p>Şüphelileri kendi sorularınızla sorgulayın, yalanlarını yakalayın, belgeleri inceleyin ve katili bulun. Her vakayı yazdırıp kâğıt üzerinde de oynayabilirsiniz.</p>
+    </header>
+    <div class="home-grid" id="homeGrid"></div>
+  </div>
+
+  <!-- OYUN -->
+  <div class="game" id="game" hidden>
+    <header class="top">
+      <div class="brand">
+        <button class="btn ghost icon" id="btnHome" type="button" title="Vakalar">☰</button>
+        <span class="brand-title" id="caseTitle"></span>
+        <span class="lv-chip" id="caseLevel"></span>
+        <span class="brand-sub" id="casePlace"></span>
+      </div>
+      <nav class="top-actions">
+        <button class="btn ghost" id="btnCase" type="button">Vaka dosyası</button>
+        <button class="btn accent" id="btnAccuse" type="button">Suçla</button>
+        <button class="btn ghost icon" id="btnReset" type="button" title="Baştan başla">↺</button>
+      </nav>
+    </header>
+
+    <main class="layout" id="layout" data-view="sorgu">
+      <aside class="panel suspects" id="panelSuspects">
+        <h2 class="panel-title">Şüpheliler</h2>
+        <ul class="suspect-list" id="suspectList"></ul>
+        <div class="stats" id="stats"></div>
+      </aside>
+
+      <section class="panel interrogation" id="panelChat">
+        <div class="chat-head" id="chatHead"></div>
+        <div class="chat-log" id="chatLog" aria-live="polite"></div>
+        <div class="chips" id="chips"></div>
+        <form class="composer" id="composer" autocomplete="off">
+          <button class="btn ghost" id="btnShow" type="button" title="Defterdeki bir bilgiyi göster">Kanıt göster</button>
+          <input class="composer-input" id="input" type="text" maxlength="200" placeholder="Sorunuzu yazın…">
+          <button class="btn primary" id="btnSend" type="submit">Sor</button>
+        </form>
+      </section>
+
+      <aside class="panel notebook" id="panelNotes">
+        <div class="nb-head">
+          <h2 class="panel-title">Defter</h2>
+          <span class="nb-count" id="nbCount"></span>
+        </div>
+        <div class="tabs" role="tablist" id="nbTabs">
+          <button class="tab active" data-tab="belge" type="button">Belgeler</button>
+          <button class="tab" data-tab="kanit" type="button">Kanıtlar</button>
+          <button class="tab" data-tab="ifade" type="button">İfadeler</button>
+          <button class="tab" data-tab="bag" type="button">Bağlantılar</button>
+        </div>
+        <div class="nb-list" id="nbList"></div>
+      </aside>
+    </main>
+
+    <nav class="mobile-nav" id="mobileNav">
+      <button data-view="supheli" type="button">Şüpheliler</button>
+      <button data-view="sorgu" type="button" class="active">Sorgu</button>
+      <button data-view="defter" type="button">Defter <span class="dot" id="mobileDot"></span></button>
     </nav>
-  </header>
-
-  <main class="layout" id="layout" data-view="sorgu">
-    <aside class="panel suspects" id="panelSuspects">
-      <h2 class="panel-title">Şüpheliler</h2>
-      <ul class="suspect-list" id="suspectList"></ul>
-      <div class="stats" id="stats"></div>
-    </aside>
-
-    <section class="panel interrogation" id="panelChat">
-      <div class="chat-head" id="chatHead"></div>
-      <div class="chat-log" id="chatLog" aria-live="polite"></div>
-      <div class="chips" id="chips"></div>
-      <form class="composer" id="composer" autocomplete="off">
-        <button class="btn ghost" id="btnShow" type="button" title="Defterdeki bir bilgiyi göster">Kanıt göster</button>
-        <input class="composer-input" id="input" type="text" maxlength="200" placeholder="Sorunuzu yazın…">
-        <button class="btn primary" id="btnSend" type="submit">Sor</button>
-      </form>
-    </section>
-
-    <aside class="panel notebook" id="panelNotes">
-      <div class="nb-head">
-        <h2 class="panel-title">Defter</h2>
-        <span class="nb-count" id="nbCount"></span>
-      </div>
-      <div class="tabs" role="tablist" id="nbTabs">
-        <button class="tab active" data-tab="kanit" type="button">Kanıtlar</button>
-        <button class="tab" data-tab="ifade" type="button">İfadeler</button>
-        <button class="tab" data-tab="bag" type="button">Bağlantılar</button>
-      </div>
-      <div class="nb-list" id="nbList"></div>
-    </aside>
-  </main>
-
-  <nav class="mobile-nav" id="mobileNav">
-    <button data-view="supheli" type="button">Şüpheliler</button>
-    <button data-view="sorgu" type="button" class="active">Sorgu</button>
-    <button data-view="defter" type="button">Defter <span class="dot" id="mobileDot"></span></button>
-  </nav>
+  </div>
 
   <div class="modal" id="modal" hidden>
     <div class="modal-card" role="dialog" aria-modal="true">
@@ -68,8 +84,12 @@
 
   <div class="toasts" id="toasts"></div>
 
-  <script src="js/story.js"></script>
+  <!-- Vakalar: yeni vaka eklemek için buraya bir satır ekleyin -->
+  <script src="cases/son-hasat.js"></script>
+
   <script src="js/engine.js"></script>
+  <script src="js/portrait.js"></script>
+  <script src="js/docs.js"></script>
   <script src="js/ui.js"></script>
 </body>
 </html>

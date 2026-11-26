@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yazdırılabilir Vaka Dosyası</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/print.css">
+</head>
+<body class="print-body">
+  <div class="print-bar no-print">
+    <a href="index.html">← Oyuna dön</a>
+    <span>Bu sayfa A4 olarak yazdırılmak üzere hazırlandı. Tarayıcının yazdırma penceresinde “PDF olarak kaydet” seçeneğini de kullanabilirsiniz.</span>
+    <button type="button" onclick="window.print()">Yazdır / PDF</button>
+  </div>
+  <main id="book"></main>
+
+  <script src="cases/son-hasat.js"></script>
+  <script src="js/portrait.js"></script>
+  <script src="js/docs.js"></script>
+  <script src="js/print.js"></script>
+</body>
+</html>
